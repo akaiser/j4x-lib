@@ -285,6 +285,7 @@
             });
         },
 
+        // @todo describe params
         _restoreHeader: function(params) {
             var self = this;
 
@@ -341,7 +342,7 @@
             });
         },
 
-        // @todo params beschreiben
+        // @todo describe params
         _restoreBody: function(params) {
             var self = this;
 
@@ -411,6 +412,7 @@
         //$(this._xtable).find('tbody').replaceWith(tableBody);
         },
 
+        // @todo describe params
         _restoreFooter: function(params) {
             var self = this;
 
@@ -435,7 +437,7 @@
             self._removeHoverAndFocus(self._pe[5]);
         },
 
-
+        // @todo describe params
         _restoreFilter: function(params, requestType, eventType) {
             var self = this;
 

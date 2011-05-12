@@ -17,8 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Beinhaltet Sortierungs- XFilter- und Cachingfunktionalitaeten fur die
- * vereinfachte Kommunikation und den Transport zur Obeflaeche.
+ *
+ * Provides filter, sort, and caching functionality for
+ * simplified communication with the client
  *
  * @author akaiser
  * @version 0.2 (20.07.10)
