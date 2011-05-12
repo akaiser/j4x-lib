@@ -1,0 +1,238 @@
+package org.j4x.filter;
+
+import org.j4x.constants.XTableContstants.DQTableFilterType;
+import org.j4x.constants.XTableContstants.DQTableRequestType;
+import org.j4x.util.XComparator;
+import org.j4x.util.XHelper;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Helfer-Klasse fuer das Registrieren von XFilter-Instanzen der Obeflaeche
+ * und das Filtern der Liste
+ *
+ * @author akaiser
+ * @version 0.2 (20.07.10)
+ */
+public class XFilterContainer {
+
+    // Liste mit allen Filtern
+    private List<XFilter> filterList = new ArrayList<XFilter>();
+
+    // Hinzufuegen einer XFilter-Instanz
+    public void add(XFilter newFilter, DQTableRequestType requestType) {
+
+        // Wert des Filters vorbereiten
+        //values = values.toString().trim();
+
+        // Durchlauf aller XFilter-Elemente
+        for (XFilter presentFilter : filterList) {
+
+            // filter allready exists
+            if (presentFilter.equals(newFilter)) {
+
+                // type of INPUT is removable if value is null or empty
+                if (!requestType.equals(DQTableRequestType.INIT)
+                        && presentFilter.getFilterType().equals(DQTableFilterType.INPUT)
+                        && (newFilter.getFilterValue() == null || newFilter.getFilterValue().isEmpty())) {
+                    filterList.remove(presentFilter);
+                }
+
+                // otherwise update the values
+                if (!requestType.equals(DQTableRequestType.INIT)) {
+                    presentFilter.setFilterValue(newFilter.getFilterValue());
+                }
+
+                // done here
+                return;
+
+            }
+        }
+        // @todo testen auf INPUT, weil kann leer sein
+        // filter does not exist, add a new one
+        //filterList.add(new XFilter(elementId, filterPath, new Object[]{values}, filterType));
+        filterList.add(newFilter);
+    }
+
+    /**
+     * Filterung der Liste anhand von gegebenen Filterelementen
+     *
+     * @param mainList  Die Liste mit allen Elementen
+     */
+    public List filter(List mainList) {
+
+        // Liste mit gefilterten Objekten
+        List<Object> temp = new ArrayList<Object>();
+
+        // Durchlauf aller Objekte der Liste
+        for (Object o : mainList) {
+
+            // Der Eintrag gilt als valide
+            boolean isValid = true;
+
+            // Durchlauf aller verfuegbarer XFilter
+            for (XFilter filter : filterList) {
+
+                try {
+                    Method om = null;
+                    Object oc = o;
+
+                    // Durchlauf aller verschachtelten Methoden
+                    for (String method : XHelper.getMethodPath(filter.getFilterPath())) {
+                        om = oc.getClass().getMethod(method, new Class[]{});
+                        oc = om.invoke(oc, new Object[]{});
+                    }
+
+                    if (filter.getFilterValue() != null && !filter.getFilterValue().isEmpty()) {
+
+                        // Der Wert trifft nicht zu
+                        if (!oc.toString().toUpperCase().matches(".*" + filter.getFilterValue().toUpperCase() + ".*")) {
+
+                            // Objekt ist nicht valide
+                            isValid = false;
+                            break;
+                        }
+                    } else {
+                        // @todo
+                        //isValid = false;
+                        // iterate over all filter values - esp. for selectmultiple
+                        //for (Object filterValue : filter.getFilterValue()) {
+                        // Der Wert trifft zu
+                        //if (oc.toString().toUpperCase().matches(".*" + filterValue.toString().toUpperCase() + ".*")) {
+                        // Objekt ist valide
+                        //isValid = true;
+                        //break;
+                        //}
+                        //}
+                    }
+                } catch (IllegalAccessException ex) {
+                } catch (IllegalArgumentException ex) {
+                } catch (InvocationTargetException ex) {
+                } catch (NoSuchMethodException ex) {
+                } catch (SecurityException ex) {
+                }
+            }
+
+            // Objekt valide, dann eintragen in die Liste
+            if (isValid) {
+                temp.add(o);
+            }
+        }
+
+        return temp;
+    }
+
+    // Rueckgabe der XFilter-Werte
+    public List<Object> getValues(List subList) {
+
+        List<Object> temp = new ArrayList<Object>();
+
+        // iterate over all registered filters
+        for (XFilter filter : filterList) {
+
+            Object filterData = null;
+
+            // output depends on filtertype
+            switch (filter.getFilterType()) {
+                case INPUT:
+                case SUGGEST:
+                    filterData = new Object[]{
+                                filter.getElementId(),
+                                filter.getFilterType().toString(),
+                                filter.getFilterValue()
+                            };
+                    break;
+                case SELECTONE:
+
+                    filterData = new Object[]{
+                                filter.getElementId(),
+                                filter.getFilterType().toString(),
+                                getOptions(filter, subList),
+                                filter.getFilterValue()
+                            };
+                    break;
+                case SELECTMULTIPLE:
+
+                    // @todo
+                    filterData = new Object[]{
+                                filter.getElementId(),
+                                filter.getFilterType().toString(),
+                                getOptions(filter, subList),
+                                filter.getFilterValue()
+                            };
+                    break;
+            }
+
+            temp.add(filterData);
+        }
+
+        return temp;
+    }
+
+    /**
+     * Suchen, Filtern und Sortiren von Elementen aller Objekte einer Spalte
+     *
+     * @param filter    the filter
+     * @param subList   list with elements (subList)
+     * @return gefiltertes Array
+     */
+    public Object[] getOptions(XFilter filter, List subList) {
+
+        // Liste mit gefilterten Objekten
+        List<Object> temp = new ArrayList<Object>();
+
+        String[] methodPath = XHelper.getMethodPath(filter.getFilterPath());
+
+        // Durchlauf aller Objekte der Liste
+        for (Object o : subList) {
+
+            try {
+                Method om = null;
+                Object oc = o;
+
+                // Der Eintrag gilt als valide
+                boolean isValid = true;
+
+                // Durchlauf aller verschachtelten Methoden
+                for (String method : methodPath) {
+                    om = oc.getClass().getMethod(method, new Class[]{});
+                    oc = om.invoke(oc, new Object[]{});
+                }
+
+                // Durchlauf und Duplikate vermeiden
+                for (Object entry : temp) {
+                    if (entry.toString().equals(oc.toString())) {
+                        isValid = false;
+                        //break;
+                    }
+                }
+
+
+                // Sonst Einfuegen in temp
+                if (isValid) {
+                    temp.add(oc);
+                }
+
+            } catch (IllegalAccessException ex) {
+            } catch (IllegalArgumentException ex) {
+            } catch (InvocationTargetException ex) {
+            } catch (NoSuchMethodException ex) {
+            } catch (SecurityException ex) {
+            }
+        }
+
+        //Sortierung durchfuehren
+        Collections.sort(temp, new XComparator(true));
+
+        return temp.toArray();
+    }
+
+    public void resetFilterValues() {
+        for (XFilter filter : filterList) {
+            filter.setFilterValue("");
+        }
+    }
+}
