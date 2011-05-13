@@ -1,7 +1,7 @@
 package org.j4x.filter;
 
 import com.google.gson.annotations.SerializedName;
-import org.j4x.constants.XTableContstants.DQTableFilterType;
+import org.j4x.constants.XTableContstants.TableFilterType;
 
 /**
  * Helfer-Klasse fuer Elemente der Obeflaeche
@@ -18,7 +18,7 @@ public class XFilter {
     @SerializedName("filtervalue")
     private String filterValue;
     @SerializedName("filtertype")
-    private DQTableFilterType filterType;
+    private TableFilterType filterType;
 
 
     public String getElementId() {
@@ -29,11 +29,11 @@ public class XFilter {
         this.elementId = elementId;
     }
 
-    public DQTableFilterType getFilterType() {
+    public TableFilterType getFilterType() {
         return filterType;
     }
 
-    public void setFilterType(DQTableFilterType filterType) {
+    public void setFilterType(TableFilterType filterType) {
         this.filterType = filterType;
     }
 

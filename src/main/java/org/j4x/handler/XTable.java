@@ -1,7 +1,7 @@
 package org.j4x.handler;
 
 import com.google.gson.Gson;
-import org.j4x.constants.XTableContstants.DQTableRequestType;
+import org.j4x.constants.XTableContstants.TableRequestType;
 import org.j4x.extension.XTablePaginator;
 import org.j4x.extension.XTableSorter;
 import org.j4x.filter.XFilter;
@@ -61,21 +61,21 @@ public abstract class XTable {
      */
     public HashMap getTableContent(String requestType, String requestParams) {
 
-        DQTableRequestType rt = DQTableRequestType.valueOf(requestType);
+        TableRequestType rt = TableRequestType.valueOf(requestType);
 
         switch (rt) {
 
             // Initialer Aufruf der Tabelle
             case INIT: {
 
-                XRequestInit request = gson.fromJson(requestParams, XRequestInit.class);
+                XRequestInit req = gson.fromJson(requestParams, XRequestInit.class);
 
                 // Wenn keine Voreinstellungen fuer Sortervorhanden
                 if (sorter.getSortPath() == null) {
 
                     // und Parameter fuer den Sorter existieren
-                    if (request.getSortpath() != null) {
-                        sorter.setSortPath(request.getSortpath());
+                    if (req.getSortpath() != null) {
+                        sorter.setSortPath(req.getSortpath());
                     }
                 }
 
@@ -83,16 +83,15 @@ public abstract class XTable {
                 if (paginator.getRowCount() == null) {
 
                     // und Parameter fuer den Paginator existieren
-                    if (request.getRowcount() != null) {
-                        paginator.setRowCount(request.getRowcount());
+                    if (req.getRowcount() != null) {
+                        paginator.setRowCount(req.getRowcount());
                     }
                 }
 
-                // Initialisierung der Select-XFilter
-                if (request.getFilters() != null) {
-                    for (XFilter filter : request.getFilters()) {
-                        filterContainer.add(filter, rt);
-                    }
+                // Initialisierung der Filter
+                if (filterContainer.isEmpty()
+                        && req.getFilters() != null) {
+                    filterContainer.add(req.getFilters());
                 }
 
                 // initiales Erstellen der Listen
@@ -106,7 +105,7 @@ public abstract class XTable {
             case FILTER: {
 
                 // Falls noch kein XFilter vorhanden
-                filterContainer.add(gson.fromJson(requestParams, XFilter.class), rt);
+                filterContainer.update(gson.fromJson(requestParams, XFilter.class));
 
                 filterSubList();
 
@@ -116,13 +115,13 @@ public abstract class XTable {
             // Ein Sort-Event
             case SORTER: {
 
-                XRequestSorter request = gson.fromJson(requestParams, XRequestSorter.class);
+                XRequestSorter req = gson.fromJson(requestParams, XRequestSorter.class);
 
                 // Wenn Liste sortierbar ist
                 if (subList.size() > 1) {
 
                     // Falls Anfrage aktuell
-                    if (sorter.getSortPath() != null && sorter.getSortPath().equals(request.getSortPath())) {
+                    if (sorter.getSortPath() != null && sorter.getSortPath().equals(req.getSortPath())) {
 
                         // Dann Sortierreihenfolge drehen
                         sorter.setSortAsc(sorter.isSortAsc() ? false : true);
@@ -130,7 +129,7 @@ public abstract class XTable {
                     else {
 
                         // Identifizieren/Setzen des refl Paths
-                        sorter.setSortPath(request.getSortPath());
+                        sorter.setSortPath(req.getSortPath());
 
                         // Die Abfolge neutralisieren
                         sorter.setSortAsc(true);
@@ -186,14 +185,6 @@ public abstract class XTable {
                 put("filter", filterContainer.getValues(subList));
             }
         };
-        /*
-        // Bau der Antwort
-        return new Object[]{
-        getValues(),
-        sorter.getValues(subList),
-        paginator.getValues(subList),
-        filterContainer.getValues(subList)
-        };*/
     }
 
     /**

@@ -1,12 +1,11 @@
 package org.j4x.filter;
 
-import org.j4x.constants.XTableContstants.DQTableFilterType;
-import org.j4x.constants.XTableContstants.DQTableRequestType;
 import org.j4x.util.XComparator;
 import org.j4x.util.XHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,38 +22,23 @@ public class XFilterContainer {
     private List<XFilter> filterList = new ArrayList<XFilter>();
 
     // Hinzufuegen einer XFilter-Instanz
-    public void add(XFilter newFilter, DQTableRequestType requestType) {
+    public void add(XFilter[] filter) {
+        filterList.addAll(Arrays.asList(filter));
+    }
 
-        // Wert des Filters vorbereiten
-        //values = values.toString().trim();
+    public void update(XFilter updateFilter) {
 
-        // Durchlauf aller XFilter-Elemente
         for (XFilter presentFilter : filterList) {
 
-            // filter allready exists
-            if (presentFilter.equals(newFilter)) {
+            // update the value
+            if (presentFilter.equals(updateFilter)) {
+                presentFilter.setFilterValue(updateFilter.getFilterValue());
 
-                // type of INPUT is removable if value is null or empty
-                if (!requestType.equals(DQTableRequestType.INIT)
-                        && presentFilter.getFilterType().equals(DQTableFilterType.INPUT)
-                        && (newFilter.getFilterValue() == null || newFilter.getFilterValue().isEmpty())) {
-                    filterList.remove(presentFilter);
-                }
-
-                // otherwise update the values
-                if (!requestType.equals(DQTableRequestType.INIT)) {
-                    presentFilter.setFilterValue(newFilter.getFilterValue());
-                }
-
-                // done here
+                // @todo done here? not really
+                // onsubmit for all filter updates possible
                 return;
-
             }
         }
-        // @todo testen auf INPUT, weil kann leer sein
-        // filter does not exist, add a new one
-        //filterList.add(new XFilter(elementId, filterPath, new Object[]{values}, filterType));
-        filterList.add(newFilter);
     }
 
     /**
@@ -76,27 +60,19 @@ public class XFilterContainer {
             // Durchlauf aller verfuegbarer XFilter
             for (XFilter filter : filterList) {
 
-                try {
-                    Method om = null;
-                    Object oc = o;
+                if (filter.getFilterValue() != null
+                        && !filter.getFilterValue().isEmpty()) {
+                    try {
+                        Method om = null;
+                        Object oc = o;
 
-                    // Durchlauf aller verschachtelten Methoden
-                    for (String method : XHelper.getMethodPath(filter.getFilterPath())) {
-                        om = oc.getClass().getMethod(method, new Class[]{});
-                        oc = om.invoke(oc, new Object[]{});
-                    }
-
-                    if (filter.getFilterValue() != null && !filter.getFilterValue().isEmpty()) {
-
-                        // Der Wert trifft nicht zu
-                        if (!oc.toString().toUpperCase().matches(".*" + filter.getFilterValue().toUpperCase() + ".*")) {
-
-                            // Objekt ist nicht valide
-                            isValid = false;
-                            break;
+                        // Durchlauf aller verschachtelten Methoden
+                        for (String method : XHelper.getMethodPath(filter.getFilterPath())) {
+                            om = oc.getClass().getMethod(method, new Class[]{});
+                            oc = om.invoke(oc, new Object[]{});
                         }
-                    } else {
-                        // @todo
+
+                        // @todo selectmultiple
                         //isValid = false;
                         // iterate over all filter values - esp. for selectmultiple
                         //for (Object filterValue : filter.getFilterValue()) {
@@ -107,12 +83,21 @@ public class XFilterContainer {
                         //break;
                         //}
                         //}
+
+                        // Der Wert trifft nicht zu
+                        if (!oc.toString().toUpperCase().matches(".*" + filter.getFilterValue().toUpperCase() + ".*")) {
+
+                            // Objekt ist nicht valide
+                            isValid = false;
+                            break;
+                        }
+
+                    } catch (IllegalAccessException ex) {
+                    } catch (IllegalArgumentException ex) {
+                    } catch (InvocationTargetException ex) {
+                    } catch (NoSuchMethodException ex) {
+                    } catch (SecurityException ex) {
                     }
-                } catch (IllegalAccessException ex) {
-                } catch (IllegalArgumentException ex) {
-                } catch (InvocationTargetException ex) {
-                } catch (NoSuchMethodException ex) {
-                } catch (SecurityException ex) {
                 }
             }
 
@@ -172,6 +157,12 @@ public class XFilterContainer {
         return temp;
     }
 
+    public void resetFilterValues() {
+        for (XFilter filter : filterList) {
+            filter.setFilterValue(null);
+        }
+    }
+
     /**
      * Suchen, Filtern und Sortiren von Elementen aller Objekte einer Spalte
      *
@@ -179,7 +170,7 @@ public class XFilterContainer {
      * @param subList   list with elements (subList)
      * @return gefiltertes Array
      */
-    public Object[] getOptions(XFilter filter, List subList) {
+    private Object[] getOptions(XFilter filter, List subList) {
 
         // Liste mit gefilterten Objekten
         List<Object> temp = new ArrayList<Object>();
@@ -230,9 +221,7 @@ public class XFilterContainer {
         return temp.toArray();
     }
 
-    public void resetFilterValues() {
-        for (XFilter filter : filterList) {
-            filter.setFilterValue("");
-        }
+    public boolean isEmpty() {
+        return filterList.isEmpty();
     }
 }

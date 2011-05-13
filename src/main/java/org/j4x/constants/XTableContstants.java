@@ -2,17 +2,17 @@ package org.j4x.constants;
 
 public class XTableContstants {
 
-    public static enum DQTableRequestType {
+    public static enum TableRequestType {
 
         INIT, SORTER, PAGINATOR, FILTER
     }
 
-    public static enum DQTablePaginatorEvent {
+    public static enum TablePaginatorEvent {
 
         FIRST, PREVIOUS, NEXT, LAST, RELOAD
     }
 
-    public static enum DQTableFilterType {
+    public static enum TableFilterType {
 
         INPUT, SUGGEST, SELECTONE, SELECTMULTIPLE
     }

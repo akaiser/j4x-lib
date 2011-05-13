@@ -273,16 +273,17 @@
             self._xoverlay.show(true);
 
             // perform remote request
-            self.options.proxy.getTableContent(requestType, $.toJSON(requestParams),function(responce){
+            self.options.dwrproxy.getTableContent(requestType,
+                $.toJSON(requestParams), function(responce){
                 
-                self._restoreHeader(responce.sorter);
-                self._restoreBody(responce.body);
-                self._restoreFooter(responce.paginator);
-                self._restoreFilter(responce.filter, requestType, requestParams.event);
+                    self._restoreHeader(responce.sorter);
+                    self._restoreBody(responce.body);
+                    self._restoreFooter(responce.paginator);
+                    self._restoreFilter(responce.filter, requestType, requestParams.event);
 
-                // hide overlay
-                self._xoverlay.show(false);
-            });
+                    // hide overlay
+                    self._xoverlay.show(false);
+                });
         },
 
         // @todo describe params
