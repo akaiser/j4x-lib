@@ -73,7 +73,7 @@
                     $(button).click(function() {
 
                         // perform sort-event
-                        self._restore('SORTER', {
+                        self._restore('SORT', {
                             sortpath: e.sortpath
                         });
                     });
@@ -84,54 +84,54 @@
 
                 headerRow.append(column.append(button));
             });
-
+            alert(self.options.paging.first);
             /**
              * footer creation
              */
             // pagiator elements
             this._pe = [
-            $('<span title="INFO" style="float:left; padding:6px; font-weight:normal" />'),
+            $('<span title="INFO" style="float:left; padding:6px" />'),
             $('<button style="margin-right:0px" title="FIRST" />').button({
-                label: 'first',
+                label: (self.options.paging.first)?self.options.paging.first:'first',
                 icons:{
                     primary: 'ui-icon-arrowthickstop-1-w'
                 }
             }),
-            $('<button style="margin-right:0px" title="PREVIOUS" />').button({
-                label: 'previous',
+            $('<button title="PREVIOUS" />').button({
+                label: (self.options.paging.previous)?self.options.paging.previous:'previous',
                 icons:{
                     primary: 'ui-icon-arrowthick-1-w'
                 }
             }),
-            $('<button style="margin-right:0px" title="NEXT" />').button({
-                label: 'next',
+            $('<button title="NEXT" />').button({
+                label: (self.options.paging.next)?self.options.paging.next:'next',
                 icons:{
                     secondary: 'ui-icon-arrowthick-1-e'
                 }
             }),
-            $('<button style="margin-right:0px" title="LAST" />').button({
-                label: 'last',
+            $('<button title="LAST" />').button({
+                label: (self.options.paging.last)?self.options.paging.last:'last',
                 icons:{
                     secondary: 'ui-icon-arrowthickstop-1-e'
                 }
             }),
-            $('<button style="margin-right:0px" title="RELOAD" />').button({
-                label: 'reload'
+            $('<button title="RELOAD" />').button({
+                label: (self.options.paging.reload)?self.options.paging.reload:'reload'
             })
             ];
 
-            // container for paginator elements
-            var paginatorDiv = $('<div align="right" />');
+            // container for paging elements
+            var pagingDiv = $('<div align="right" />');
 
-            // fill the Paginator Container
+            // fill the paging container
             $(this._pe).each(function(i,e){
 
                 // Nur Buttons mit Click-Handlern versehen
                 if(i!=0){
                     $(e).click(function(){
 
-                        // perform paginator-event
-                        self._restore('PAGINATOR', {
+                        // perform paging-event
+                        self._restore('PAGING', {
                             event: $(e).attr('title')
                         });
                     });
@@ -140,8 +140,11 @@
                         $(e).css('display','none');
                     }
                 }
-                $(paginatorDiv).append(e);
+                $(pagingDiv).append(e);
             });
+
+            // button ui fixing
+            $('button',pagingDiv).css('margin-right','0px');
 
             /**
              * table creation
@@ -157,7 +160,7 @@
             $('thead',this._xtable).append(headerRow);
             $('tfoot',this._xtable).append($('<tr />')
                 .append($('<td />').attr('colspan', $('th', headerRow).length)
-                    .append(paginatorDiv)));
+                    .append(pagingDiv)));
 
             // finally append table to this element
             this.element.append(this._xtable);
@@ -273,12 +276,12 @@
             self._xoverlay.show(true);
 
             // perform remote request
-            self.options.dwrproxy.getTableContent(requestType,
+            self.options.datasource.getTableContent(requestType,
                 $.toJSON(requestParams), function(responce){
                 
-                    self._restoreHeader(responce.sorter);
+                    self._restoreHeader(responce.sort);
                     self._restoreBody(responce.body);
-                    self._restoreFooter(responce.paginator);
+                    self._restoreFooter(responce.paging);
                     self._restoreFilter(responce.filter, requestType, requestParams.event);
 
                     // hide overlay
@@ -293,10 +296,10 @@
             // header-columns of the table
             var headerColumns = $('thead th', this._xtable);
 
-            $(headerColumns).each(function(i,currentColumn){
+            $(headerColumns).each(function(i,e){
 
                 // identify the nested button
-                var currentButton = $(currentColumn).find('button');
+                var currentButton = $(e).find('button');
 
                 // sorting only possible with multiple entrys
                 if(params[0] > 1){
@@ -351,7 +354,7 @@
             var tableBody = $('<tbody class="ui-widget-content" />');
 
             // iterate each row entry
-            $(params).each(function(i,e){
+            $(params).each(function(){
 
                 // create new row with hover and click event
                 var newRow = $('<tr style="cursor:pointer" />')
@@ -374,15 +377,8 @@
                 //self._selectedRow = $(newRow).addClass('ui-state-focus').css('cursor','default');
                 });
 
-                // add alternate row background
-                if(i%2!=0){
-                    $(newRow).addClass('ui-state-default');
-                }
-
-                var cellCount = e.length-1;
-
                 // iterate each column
-                $(e).each(function(i,e){
+                $(this).each(function(i,e){
 
                     // append the object id
                     if(i==0){
@@ -390,27 +386,26 @@
                     }else{
                         var newCell = $('<td>'+e+'</td>');
 
-                        if(i==cellCount){
-                            $(newCell).css({
-                                'padding':'2px',
-                                'border-right':'1px solid #D3D3D3'
-                            });
-                        // #E6E6E6
-                        }else if(i==1){
-                            $(newCell).css('border-left','1px solid #D3D3D3');
-                        }
-
                         $(newRow).append(newCell);
                     }
+                });
+
+                // some cell border... #E6E6E6
+                $('td:first',newRow).css('border-left','1px solid #D3D3D3');
+                $('td:last',newRow).css({
+                    'padding':'2px',
+                    'border-right':'1px solid #D3D3D3'
                 });
 
                 // append row to the body
                 $(newRow).appendTo(tableBody);
             });
 
-            // insert body into table
-            $('tbody', this._xtable).replaceWith(tableBody);
-        //$(this._xtable).find('tbody').replaceWith(tableBody);
+            // add alternate row background
+            $('tr:odd', tableBody).addClass('ui-state-default');
+
+            // replace current body
+            $('tbody', self._xtable).replaceWith(tableBody);
         },
 
         // @todo describe params
@@ -461,7 +456,7 @@
                     // Ein Text-Element, setzen der Werte (IE und Chrome)
                     case 'INPUT':
 
-                        // updating only on INIT or PAGINATOR-RELOAD event
+                        // updating only on INIT or PAGING-RELOAD event
                         if(requestType == 'INIT' || eventType == 'RELOAD'){
                             $(filterElement).val(e[2]);
 

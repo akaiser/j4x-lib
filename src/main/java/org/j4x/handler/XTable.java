@@ -2,14 +2,14 @@ package org.j4x.handler;
 
 import com.google.gson.Gson;
 import org.j4x.constants.XTableContstants.TableRequestType;
-import org.j4x.extension.XTablePaginator;
-import org.j4x.extension.XTableSorter;
+import org.j4x.extension.XTablePaging;
+import org.j4x.extension.XTableSort;
 import org.j4x.filter.XFilter;
 import org.j4x.util.XComparator;
 import org.j4x.filter.XFilterContainer;
 import org.j4x.request.XRequestInit;
-import org.j4x.request.XRequestPaginator;
-import org.j4x.request.XRequestSorter;
+import org.j4x.request.XRequestPaging;
+import org.j4x.request.XRequestSort;
 import org.j4x.util.XHelper;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,10 +26,10 @@ import java.util.List;
  */
 public abstract class XTable {
 
-    // Sorter
-    private XTableSorter sorter = new XTableSorter();
-    // Paginator
-    private XTablePaginator paginator = new XTablePaginator();
+    // Sort
+    private XTableSort sort = new XTableSort();
+    // Paging
+    private XTablePaging paging = new XTablePaging();
     // Registriert die Filter-Instanzen
     private XFilterContainer filterContainer = new XFilterContainer();
     // Gson instanz
@@ -55,9 +55,9 @@ public abstract class XTable {
      * Schnittstelle zur Oberflaeche. Liefert eine Liste fuer den vereinfachten
      * Transport von Objektattributen der gesamten Tabelle
      *
-     * @param requestType   type like [INIT, SORTER, PAGINATOR, FILTER]
+     * @param requestType   type like [INIT, SORT, PAGING, FILTER]
      * @param requestParams as JSON-String
-     * @return Array mit Daten und Informationen zum Sorter und Paginator
+     * @return Array mit Daten und Informationen zum Sort und Paging
      */
     public HashMap getTableContent(String requestType, String requestParams) {
 
@@ -70,21 +70,21 @@ public abstract class XTable {
 
                 XRequestInit req = gson.fromJson(requestParams, XRequestInit.class);
 
-                // Wenn keine Voreinstellungen fuer Sortervorhanden
-                if (sorter.getSortPath() == null) {
+                // Wenn keine Voreinstellungen fuer Sort vorhanden
+                if (sort.getSortPath() == null) {
 
-                    // und Parameter fuer den Sorter existieren
+                    // und Parameter fuer den Sort existieren
                     if (req.getSortpath() != null) {
-                        sorter.setSortPath(req.getSortpath());
+                        sort.setSortPath(req.getSortpath());
                     }
                 }
 
-                // Wenn keine Voreinstellungen fuer Paginator vorhanden
-                if (paginator.getRowCount() == null) {
+                // Wenn keine Voreinstellungen fuer Paging vorhanden
+                if (paging.getRowCount() == null) {
 
-                    // und Parameter fuer den Paginator existieren
+                    // und Parameter fuer den Paging existieren
                     if (req.getRowcount() != null) {
-                        paginator.setRowCount(req.getRowcount());
+                        paging.setRowCount(req.getRowcount());
                     }
                 }
 
@@ -113,26 +113,26 @@ public abstract class XTable {
             }
 
             // Ein Sort-Event
-            case SORTER: {
+            case SORT: {
 
-                XRequestSorter req = gson.fromJson(requestParams, XRequestSorter.class);
+                XRequestSort req = gson.fromJson(requestParams, XRequestSort.class);
 
                 // Wenn Liste sortierbar ist
                 if (subList.size() > 1) {
 
                     // Falls Anfrage aktuell
-                    if (sorter.getSortPath() != null && sorter.getSortPath().equals(req.getSortPath())) {
+                    if (sort.getSortPath() != null && sort.getSortPath().equals(req.getSortPath())) {
 
                         // Dann Sortierreihenfolge drehen
-                        sorter.setSortAsc(sorter.isSortAsc() ? false : true);
+                        sort.setSortAsc(sort.isSortAsc() ? false : true);
                     } // Sonst die Sortierung aendern
                     else {
 
                         // Identifizieren/Setzen des refl Paths
-                        sorter.setSortPath(req.getSortPath());
+                        sort.setSortPath(req.getSortPath());
 
                         // Die Abfolge neutralisieren
-                        sorter.setSortAsc(true);
+                        sort.setSortAsc(true);
                     }
 
                     // Sortierung durchfuehren
@@ -141,25 +141,25 @@ public abstract class XTable {
                 break;
             }
 
-            // Ein Paginator-Event
-            case PAGINATOR: {
+            // Ein Paging-Event
+            case PAGING: {
 
-                switch (gson.fromJson(requestParams, XRequestPaginator.class).getEvent()) {
+                switch (gson.fromJson(requestParams, XRequestPaging.class).getEvent()) {
 
                     case FIRST:
-                        paginator.setPageNumber(1);
+                        paging.setPageNumber(1);
                         break;
 
                     case PREVIOUS:
-                        paginator.turnPage(false);
+                        paging.turnPage(false);
                         break;
 
                     case NEXT:
-                        paginator.turnPage(true);
+                        paging.turnPage(true);
                         break;
 
                     case LAST:
-                        paginator.setLastPage(subList);
+                        paging.setLastPage(subList);
                         break;
 
                     // reload whole list
@@ -180,8 +180,8 @@ public abstract class XTable {
 
             {
                 put("body", getValues());
-                put("sorter", sorter.getValues(subList));
-                put("paginator", paginator.getValues(subList));
+                put("sort", sort.getValues(subList));
+                put("paging", paging.getValues(subList));
                 put("filter", filterContainer.getValues(subList));
             }
         };
@@ -199,13 +199,13 @@ public abstract class XTable {
         List<Object> tableValues = new ArrayList<Object>();
 
         // Ist die Tabelle in ihrer Darstellung begrenzt, dann filtern
-        if (paginator.getRowCount() != null) {
+        if (paging.getRowCount() != null) {
 
             for (int i = 0; i
-                    < paginator.getRowCount(); i++) {
+                    < paging.getRowCount(); i++) {
 
                 // Aktueller index der Eintraege in der gesamten Subliste
-                int index = paginator.getEntryPosition(i);
+                int index = paging.getEntryPosition(i);
 
                 // Falls kein Eintrag mehr verfuegbar
                 if (index >= subList.size()) {
@@ -257,13 +257,13 @@ public abstract class XTable {
      *  Sortierung der Subliste durchfuehren
      */
     private void sortSubList() {
-        if (sorter.getSortPath() != null) {
+        if (sort.getSortPath() != null) {
 
             // Sortierung durchfuehren
-            Collections.sort(subList, new XComparator(XHelper.getMethodPath(sorter.getSortPath()), sorter.isSortAsc()));
+            Collections.sort(subList, new XComparator(XHelper.getMethodPath(sort.getSortPath()), sort.isSortAsc()));
         }
 
         // Seitenindex neutralisieren
-        paginator.setPageNumber(1);
+        paging.setPageNumber(1);
     }
 }

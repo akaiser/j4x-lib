@@ -4,10 +4,10 @@ public class XTableContstants {
 
     public static enum TableRequestType {
 
-        INIT, SORTER, PAGINATOR, FILTER
+        INIT, SORT, PAGING, FILTER
     }
 
-    public static enum TablePaginatorEvent {
+    public static enum TablePagingEvent {
 
         FIRST, PREVIOUS, NEXT, LAST, RELOAD
     }
