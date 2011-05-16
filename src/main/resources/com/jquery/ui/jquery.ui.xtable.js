@@ -50,13 +50,14 @@
 
         _createTable: function() {
             var self = this;
+            var o = self.options;
 
             /**
              * header creation
              */
             var headerRow = $('<tr />');
 
-            $(this.options.column).each(function(i,e){
+            $(o.column).each(function(i,e){
 
                 var column = $('<th />');
                 var button = $('<button style="width:100%">'+e.label+'</button>').button();
@@ -84,39 +85,42 @@
 
                 headerRow.append(column.append(button));
             });
-            alert(self.options.paging.first);
+            
             /**
              * footer creation
              */
+
+            var paging = (o.paging)?true:false;
+
             // pagiator elements
             this._pe = [
             $('<span title="INFO" style="float:left; padding:6px" />'),
             $('<button style="margin-right:0px" title="FIRST" />').button({
-                label: (self.options.paging.first)?self.options.paging.first:'first',
+                label: (paging && o.paging.first)?o.paging.first:'first',
                 icons:{
                     primary: 'ui-icon-arrowthickstop-1-w'
                 }
             }),
             $('<button title="PREVIOUS" />').button({
-                label: (self.options.paging.previous)?self.options.paging.previous:'previous',
+                label: (paging && o.paging.previous)?o.paging.previous:'previous',
                 icons:{
                     primary: 'ui-icon-arrowthick-1-w'
                 }
             }),
             $('<button title="NEXT" />').button({
-                label: (self.options.paging.next)?self.options.paging.next:'next',
+                label: (paging && o.paging.next)?o.paging.next:'next',
                 icons:{
                     secondary: 'ui-icon-arrowthick-1-e'
                 }
             }),
             $('<button title="LAST" />').button({
-                label: (self.options.paging.last)?self.options.paging.last:'last',
+                label: (paging && o.paging.last)?o.paging.last:'last',
                 icons:{
                     secondary: 'ui-icon-arrowthickstop-1-e'
                 }
             }),
             $('<button title="RELOAD" />').button({
-                label: (self.options.paging.reload)?self.options.paging.reload:'reload'
+                label: (paging && o.paging.reload)?o.paging.reload:'reload'
             })
             ];
 
@@ -126,7 +130,7 @@
             // fill the paging container
             $(this._pe).each(function(i,e){
 
-                // Nur Buttons mit Click-Handlern versehen
+                // only buttons are click- and removeable
                 if(i!=0){
                     $(e).click(function(){
 
@@ -136,7 +140,7 @@
                         });
                     });
 
-                    if(!self.options.rowcount){
+                    if(!o.rowcount){
                         $(e).css('display','none');
                     }
                 }
@@ -175,6 +179,7 @@
             $(this.options.filter).each(function(i,e){
 
                 filterElement = $('#'+e.id);
+                filterValue = $.trim($(filterElement).val());
 
                 // identify filtertype and bind event
                 switch($(filterElement).attr('tagName')){
@@ -182,7 +187,6 @@
 
                         // initial param setup
                         e.filtertype = 'INPUT';
-                        e.filtervalue = $.trim($(filterElement).val());
 
                         // KeyUp or OnChange
                         if(e.keyup){
@@ -195,21 +199,32 @@
                             });
                         }
 
-                        // bind events for label setup
+                        // label attr is available
                         if(e.label){
+
+                            // bind events for label setup
                             $(filterElement).blur(function(){
-                                filterValue = $.trim($(this).val());
-                                if(filterValue.length==0){
+                                if($.trim($(this).val()).length==0){
                                     $(this).val(e.label).css('color','#aaa');
                                 //$(this).val(e.label).addClass('ui-state-error-text');
                                 }
                             }).focus(function(){
-                                filterValue = $.trim($(this).val());
-                                if(filterValue==e.label){
+                                if($.trim($(this).val())==e.label){
                                     $(this).val('').css('color','');
                                 //$(this).val('').removeClass('ui-state-error-text');
                                 }
                             });
+
+                            // check the init value (firefox reload fix)
+                            if(e.label != filterValue){
+
+                                // set the (maybe defined) init value
+                                e.filtervalue = filterValue;
+                            }
+                        }else{
+
+                            // set the (maybe defined) init value
+                            e.filtervalue = filterValue;
                         }
 
                         // @todo: hier soll irgendwie Suggest-Implementierung stattfinden,
@@ -228,7 +243,9 @@
                         //e.filtertype = 'SUGGEST';
                         break;
                     case 'SELECT':
-                        if(!$(filterElement).attr('multiple')){
+                        if($(filterElement).attr('multiple')){
+                            e.filtertype = 'SELECTMULTIPLE';
+                        }else{
                             e.filtertype = 'SELECTONE';
 
                             $(filterElement).change(function(){
@@ -236,9 +253,7 @@
                                 //e.filtervalue = $.trim($(this).attr('value'));
                                 self._restore('FILTER', e);
                             });
-                        }else{
-                            e.filtertype = 'SELECTMULTIPLE';
-
+                           
                         //interesting for multiselect
                         //var str = '';
                         //$('#'+this[0]+' option:selected').each(function () {
@@ -495,7 +510,7 @@
                                 slelected = true;
                             }
 
-                            // Options mit Inhalt bauen
+                            // create options
                             options += '<option '+selectedAttribute+'value="'+value+'">'+ value +'</option>';
                         });
 
