@@ -1,5 +1,5 @@
 /*
- * jQuery UI J4XTable
+ * jQuery UI XTable
  *
  * Copyright 2011, Albert Kaiser
  * under the GPL Version 2 licenses.
@@ -30,6 +30,7 @@
         _xtable: null,
         _xoverlay: null,
         _selectedRow: null,
+        _cellAlignArray: [],
         
         _create: function() {
             this._createTable();
@@ -49,8 +50,7 @@
         },
 
         _createTable: function() {
-            var self = this;
-            var o = self.options;
+            var self = this, o = this.options;
 
             /**
              * header creation
@@ -62,9 +62,16 @@
                 var column = $('<th />');
                 var button = $('<button style="width:100%">'+e.label+'</button>').button();
 
-                // check for width
+                // check for width attr.
                 if(e.width){
                     $(column).attr('width',e.width);
+                }
+
+                // check for alignment attr.
+                if(e.align){
+
+                    // access for body cells
+                    self._cellAlignArray[i]=e.align;
                 }
 
                 // check for sortable
@@ -363,7 +370,7 @@
 
         // @todo describe params
         _restoreBody: function(params) {
-            var self = this;
+            var self = this, o = this.options;
 
             // create a table body
             var tableBody = $('<tbody class="ui-widget-content" />');
@@ -395,11 +402,18 @@
                 // iterate each column
                 $(this).each(function(i,e){
 
+                    var align;
+
                     // append the object id
                     if(i==0){
                         $(newRow).attr('id', e);
                     }else{
+
                         var newCell = $('<td>'+e+'</td>');
+
+                        if(self._cellAlignArray[i-1]){
+                            $(newCell).attr('align',self._cellAlignArray[i-1]);
+                        }
 
                         $(newRow).append(newCell);
                     }
@@ -494,10 +508,7 @@
                     // Ein Select-Element, setzen der selected-option
                     case 'SELECTONE': {
 
-                        var options = '';
-                        var selectedValues = e[3];
-                        var selectedAttribute;
-                        var slelected = false;
+                        var options = '', selectedValues = e[3], selectedAttribute, slelected = false;
 
                         $(e[2]).each(function() {
 
