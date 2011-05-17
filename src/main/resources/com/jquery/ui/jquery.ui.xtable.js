@@ -309,6 +309,22 @@
                     // hide overlay
                     self._xoverlay.show(false);
                 });
+
+             /*
+            $.ajax({
+                url: "ServletProxy",
+                dataType: "json",
+                data: "param0="+requestType+"&param1="+$.toJSON(requestParams),
+                success: function(responce){
+                    self._restoreBody(responce[0]);
+                    self._restoreHeader(responce[1]);
+                    self._restoreFooter(responce[2]);
+                    self._restoreFilter(responce[3], requestType, requestParams.event);
+
+                    // hide overlay
+                    self._xoverlay.show(false);
+                }
+            });*/
         },
 
         // @todo describe params
@@ -401,8 +417,6 @@
 
                 // iterate each column
                 $(this).each(function(i,e){
-
-                    var align;
 
                     // append the object id
                     if(i==0){

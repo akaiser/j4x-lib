@@ -177,7 +177,6 @@ public abstract class XTable {
         }
 
         return new HashMap<String, Object>() {
-
             {
                 put("body", getValues());
                 put("sort", sort.getValues(subList));
@@ -185,6 +184,15 @@ public abstract class XTable {
                 put("filter", filterContainer.getValues(subList));
             }
         };
+
+        /*
+        // create responce
+        return new Object[]{
+        getValues(),
+        sort.getValues(subList),
+        paging.getValues(subList),
+        filterContainer.getValues(subList)
+        };*/
     }
 
     /**
