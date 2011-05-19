@@ -17,20 +17,24 @@
     $.xoverlay = function(obj){
 
         // the overlay div
-        var overlay = $('<div class="ui-widget-overlay" style="cursor:wait;display:none" />');
+        var overlay = $('<div id="'+$(obj).attr('id')+'_overlay" class="ui-widget-overlay" style="cursor:wait;display:none" />');
+
+        var offset = null;
 
         // append to body
-        $('body').append(overlay);
+        $(obj).after(overlay);
 
         // public method for de/activate the overlay
         this.show = function(visible){
 
+            offset = obj.offset();
+
             // set position of the overlay
             $(overlay).css({
-                'width':$(obj).attr('offsetWidth'),
-                'height':$(obj).attr('offsetHeight'),
-                'left':$(obj).attr('offsetLeft'),
-                'top':$(obj).attr('offsetTop')
+                'width':$(obj).width(),
+                'height':$(obj).height(),
+                'top':offset.top,
+                'left':offset.left
             });
 
             // de/activate

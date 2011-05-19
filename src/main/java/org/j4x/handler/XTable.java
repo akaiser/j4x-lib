@@ -184,7 +184,7 @@ public abstract class XTable {
                 put("filter", filterContainer.getValues(subList));
             }
         };
-
+        
         /*
         // create responce
         return new Object[]{

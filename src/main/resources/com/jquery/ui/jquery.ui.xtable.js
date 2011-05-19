@@ -155,7 +155,7 @@
             });
 
             // button ui fixing
-            $('button',pagingDiv).css('margin-right','0px');
+            $('button',pagingDiv).css('margin','0px');
 
             /**
              * table creation
@@ -170,7 +170,7 @@
             // append head and foot
             $('thead',this._xtable).append(headerRow);
             $('tfoot',this._xtable).append($('<tr />')
-                .append($('<td />').attr('colspan', $('th', headerRow).length)
+                .append($('<td style="border: 1px solid #bbb;" />').attr('colspan', $('th', headerRow).length)
                     .append(pagingDiv)));
 
             // finally append table to this element
@@ -310,7 +310,7 @@
                     self._xoverlay.show(false);
                 });
 
-             /*
+        /*
             $.ajax({
                 url: "ServletProxy",
                 dataType: "json",
@@ -386,7 +386,7 @@
 
         // @todo describe params
         _restoreBody: function(params) {
-            var self = this, o = this.options;
+            var self = this;
 
             // create a table body
             var tableBody = $('<tbody class="ui-widget-content" />');
@@ -395,25 +395,7 @@
             $(params).each(function(){
 
                 // create new row with hover and click event
-                var newRow = $('<tr style="cursor:pointer" />')
-                .hover(function(){
-                    $(this).toggleClass('ui-state-hover');
-                })
-                .click(function(){
-
-                    // switch selected row
-                    $(self._selectedRow).css({
-                        'cursor':'pointer',
-                        'text-shadow':''
-                    });
-                    self._selectedRow = $(newRow).css({
-                        'cursor':'default',
-                        'text-shadow':'1px 1px 1px #666'
-                    });
-
-                //$(self._selectedRow).removeClass('ui-state-focus').css('cursor','pointer');
-                //self._selectedRow = $(newRow).addClass('ui-state-focus').css('cursor','default');
-                });
+                var newRow = $('<tr style="cursor:pointer" />');
 
                 // iterate each column
                 $(this).each(function(i,e){
@@ -434,7 +416,10 @@
                 });
 
                 // some cell border... #E6E6E6
-                $('td:first',newRow).css('border-left','1px solid #D3D3D3');
+                $('td:first',newRow).css({
+                    'padding-left':'4px',
+                    'border-left':'1px solid #D3D3D3'
+                });
                 $('td:last',newRow).css({
                     'padding':'2px',
                     'border-right':'1px solid #D3D3D3'
@@ -446,6 +431,27 @@
 
             // add alternate row background
             $('tr:odd', tableBody).addClass('ui-state-default');
+
+            // add hover and select binding
+            $('tr', tableBody)
+            //.hover(function(){
+            //    $(this).toggleClass('ui-state-hover');
+            //})
+            .click(function(){
+
+                // switch selected row
+                $(self._selectedRow).css({
+                    'cursor':'pointer',
+                    'text-shadow':''
+                });
+                self._selectedRow = $(this).css({
+                    'cursor':'default',
+                    'text-shadow':'1px 1px 1px #666'
+                });
+
+            //$(self._selectedRow).removeClass('ui-state-focus').css('cursor','pointer');
+            //self._selectedRow = $(newRow).addClass('ui-state-focus').css('cursor','default');
+            });
 
             // replace current body
             $('tbody', self._xtable).replaceWith(tableBody);
@@ -482,14 +488,6 @@
 
             $(params).each(function(i,e){
 
-                // Element de/aktivieren
-                /*
-                        if(this[1].length < 2){
-                            $(selectElement).attr('disabled', 'disabled');
-                        }else{
-                            $(selectElement).removeAttr('disabled');
-                        }
-                        */
                 // Das Select-Element
                 var filterElement = $('#' + e[0]);
 
