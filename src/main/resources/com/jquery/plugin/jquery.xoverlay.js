@@ -17,6 +17,8 @@
     $.xoverlay = function(obj){
 
         // the overlay div
+        //var overlay = $('<div id="'+$(obj).attr('id')+'_overlay" class="ui-widget-overlay" style="cursor:wait;display:none"><div style="position: absolute; top: 50%; width:100%;  text-align: center;">TRANSFER</div></div>');
+
         var overlay = $('<div id="'+$(obj).attr('id')+'_overlay" class="ui-widget-overlay" style="cursor:wait;display:none" />');
 
         var offset = null;
