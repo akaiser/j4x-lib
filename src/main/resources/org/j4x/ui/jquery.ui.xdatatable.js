@@ -1,5 +1,5 @@
 /*
- * jQuery UI XTable
+ * jQuery UI XDataTable
  *
  * Copyright 2011, Albert Kaiser
  * under the GPL Version 2 licenses.
@@ -20,14 +20,14 @@
  *
  *   jquery.delay.js
  *   jquery.json.js
- *   jquery.overlay.js
+ *   jquery.xoverlay.js
  *
  */
 (function($) {
-    $.widget( 'ui.xtable', {
+    $.widget( 'ui.xdatatable', {
 
         _pe: null,
-        _xtable: null,
+        _xdatatable: null,
         _xoverlay: null,
         _selectedRow: null,
         _cellAlignArray: [],
@@ -45,7 +45,7 @@
             this._restore('INIT',{
                 sortpath: this.options.sortpath,
                 rowcount: this.options.rowcount,
-                filters: this.options.filter
+                filter: this.options.filter
             });
         },
 
@@ -96,7 +96,6 @@
             /**
              * footer creation
              */
-
             var paging = (o.paging)?true:false;
 
             // pagiator elements
@@ -160,7 +159,7 @@
             /**
              * table creation
              */
-            this._xtable = $(
+            this._xdatatable = $(
                 '<table class="ui-widget" style="width:100%" cellpadding="0" cellspacing="0">'
                 +'<thead class="ui-widget-header"></thead>'
                 +'<tbody class="ui-widget-content"></tbody>'
@@ -168,13 +167,13 @@
                 +'</table>');
 
             // append head and foot
-            $('thead',this._xtable).append(headerRow);
-            $('tfoot',this._xtable).append($('<tr />')
+            $('thead',this._xdatatable).append(headerRow);
+            $('tfoot',this._xdatatable).append($('<tr />')
                 .append($('<td style="border: 1px solid #bbb;" />').attr('colspan', $('th', headerRow).length)
                     .append(pagingDiv)));
 
             // finally append table to this element
-            this.element.append(this._xtable);
+            this.element.append(this._xdatatable);
         },
 
         _createFilter: function() {
@@ -296,10 +295,12 @@
 
             // show overlay
             self._xoverlay.show(true);
-
+            
             // perform remote request
-            self.options.datasource.getTableContent(requestType,
-                $.toJSON(requestParams), function(responce){
+            self.options.datasource.getContent(
+                requestType,
+                $.toJSON(requestParams),
+                function(responce){
                 
                     self._restoreHeader(responce.sort);
                     self._restoreBody(responce.body);
@@ -312,9 +313,9 @@
 
         /*
             $.ajax({
-                url: "ServletProxy",
+                url: self.options.datasource,
                 dataType: "json",
-                data: "param0="+requestType+"&param1="+$.toJSON(requestParams),
+                data: "requestType="+requestType+"&requestParams="+$.toJSON(requestParams),
                 success: function(responce){
                     self._restoreBody(responce[0]);
                     self._restoreHeader(responce[1]);
@@ -332,7 +333,7 @@
             var self = this;
 
             // header-columns of the table
-            var headerColumns = $('thead th', this._xtable);
+            var headerColumns = $('thead th', this._xdatatable);
 
             $(headerColumns).each(function(i,e){
 
@@ -387,6 +388,7 @@
         // @todo describe params
         _restoreBody: function(params) {
             var self = this;
+            var newRow = null, newCell = null;
 
             // create a table body
             var tableBody = $('<tbody class="ui-widget-content" />');
@@ -395,7 +397,7 @@
             $(params).each(function(){
 
                 // create new row with hover and click event
-                var newRow = $('<tr style="cursor:pointer" />');
+                newRow = $('<tr style="cursor:pointer" />');
 
                 // iterate each column
                 $(this).each(function(i,e){
@@ -405,7 +407,7 @@
                         $(newRow).attr('id', e);
                     }else{
 
-                        var newCell = $('<td>'+e+'</td>');
+                        newCell = $('<td>'+e+'</td>');
 
                         if(self._cellAlignArray[i-1]){
                             $(newCell).attr('align',self._cellAlignArray[i-1]);
@@ -454,7 +456,7 @@
             });
 
             // replace current body
-            $('tbody', self._xtable).replaceWith(tableBody);
+            $('tbody', self._xdatatable).replaceWith(tableBody);
         },
 
         // @todo describe params
@@ -588,12 +590,12 @@
         },
 
         destroy: function() {
-            this._xtable.remove();
+            this._xdatatable.remove();
             $.Widget.prototype.destroy.apply(this, arguments);
         }
     });
 
-    $.extend($.ui.xtable, {
+    $.extend($.ui.xdatatable, {
         version: '@VERSION'
     });
 })(jQuery);

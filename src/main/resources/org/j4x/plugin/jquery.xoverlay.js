@@ -23,7 +23,7 @@
 
         var offset = null;
 
-        // append to body
+        // append after obj
         $(obj).after(overlay);
 
         // public method for de/activate the overlay

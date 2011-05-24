@@ -9,7 +9,7 @@ public class XRequestInit {
     private Integer rowCount;
     @SerializedName("sortpath")
     private String sortPath;
-    @SerializedName("filters")
+    @SerializedName("filter")
     XFilter[] filters;
 
     public XFilter[] getFilters() {

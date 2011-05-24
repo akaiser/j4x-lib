@@ -18,25 +18,25 @@ import java.util.List;
 
 /**
  *
- * Provides filter, sort, and caching functionality for
+ * Provides filters, sort, and caching functionality for
  * simplified communication with the client
  *
  * @author akaiser
  * @version 0.2 (20.07.10)
  */
-public abstract class XTable {
+public abstract class XDataTable {
 
     // Sort
     private XTableSort sort = new XTableSort();
     // Paging
     private XTablePaging paging = new XTablePaging();
-    // Registriert die Filter-Instanzen
+    // Container for filters elements
     private XFilterContainer filterContainer = new XFilterContainer();
-    // Gson instanz
+    // Gson
     private Gson gson = new Gson();
-    // Die Liste mit gefilterten/sortierten Objekten
+    // filtered and sorted object list
     private List<?> subList = null;
-    // Die Liste mit allen Objekten
+    // main object list
     protected List<?> mainList = null;
 
     /**
@@ -55,11 +55,11 @@ public abstract class XTable {
      * Schnittstelle zur Oberflaeche. Liefert eine Liste fuer den vereinfachten
      * Transport von Objektattributen der gesamten Tabelle
      *
-     * @param requestType   type like [INIT, SORT, PAGING, FILTER]
+     * @param requestType types like [INIT, SORT, PAGING, FILTER]
      * @param requestParams as JSON-String
      * @return Array mit Daten und Informationen zum Sort und Paging
      */
-    public HashMap getTableContent(String requestType, String requestParams) {
+    public HashMap getContent(String requestType, String requestParams) {
 
         TableRequestType rt = TableRequestType.valueOf(requestType);
 
@@ -177,6 +177,7 @@ public abstract class XTable {
         }
 
         return new HashMap<String, Object>() {
+
             {
                 put("body", getValues());
                 put("sort", sort.getValues(subList));
@@ -184,7 +185,7 @@ public abstract class XTable {
                 put("filter", filterContainer.getValues(subList));
             }
         };
-        
+
         /*
         // create responce
         return new Object[]{

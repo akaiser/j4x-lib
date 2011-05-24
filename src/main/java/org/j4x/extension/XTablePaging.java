@@ -22,7 +22,8 @@ public class XTablePaging {
     }
 
     public void setLastPage(List subList) {
-        pageNumber = (subList.size() % rowCount == 0) ? (subList.size() / rowCount)
+        pageNumber = (subList.size() % rowCount == 0)
+                ? (subList.size() / rowCount)
                 : (subList.size() / rowCount + 1);
     }
 
@@ -40,12 +41,22 @@ public class XTablePaging {
 
         // Berechnung der Anzahl von Eintraegen
         if (rowCount != null) {
-            int itemsFrom = !subList.isEmpty() ? pageNumber * rowCount - rowCount + 1 : 0;
-            int itemsTo = pageNumber * rowCount > subList.size() ? subList.size() : pageNumber * rowCount;
+            int itemsFrom = !subList.isEmpty()
+                    ? pageNumber * rowCount - rowCount + 1
+                    : 0;
+
+            int itemsTo = pageNumber * rowCount > subList.size()
+                    ? subList.size()
+                    : pageNumber * rowCount;
 
             // Berechnung der Anzahl von Seiten
-            int pagesSum = (subList.size() % rowCount == 0) ? (subList.size() / rowCount) : (subList.size() / rowCount + 1);
-            int pagesFrom = pagesSum != 0 ? pageNumber : 0;
+            int pagesSum = (subList.size() % rowCount == 0)
+                    ? (subList.size() / rowCount)
+                    : (subList.size() / rowCount + 1);
+
+            int pagesFrom = pagesSum != 0
+                    ? pageNumber
+                    : 0;
 
             // Setzen von de-/aktiviert Eigenschaft der Buttons
             boolean previous, next;
@@ -54,7 +65,14 @@ public class XTablePaging {
 
             // Bauen des Arrays
             return new Object[]{
-                        "entry: " + itemsFrom + " - " + itemsTo + " / " + subList.size() + " | page: " + pagesFrom + " / " + pagesSum,
+                        "entry: "
+                        + itemsFrom
+                        + " - " + itemsTo
+                        + " / " + subList.size()
+                        + " | page: "
+                        + pagesFrom
+                        + " / "
+                        + pagesSum,
                         previous,
                         previous,
                         next,
@@ -66,7 +84,10 @@ public class XTablePaging {
             int itemsFrom = !subList.isEmpty() ? 1 : 0;
 
             return new Object[]{
-                        "entry: " + itemsFrom + " - " + subList.size()
+                        "entry: "
+                        + itemsFrom
+                        + " - "
+                        + subList.size()
                     };
         }
     }
