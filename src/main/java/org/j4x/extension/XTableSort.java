@@ -1,22 +1,21 @@
 package org.j4x.extension;
 
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
 public class XTableSort {
 
-    // Die aktuelle Identifikation des refl. Path
+    @SerializedName("sortpath")
     private String sortPath = null;
-    // Die Abfolge der Sortierung
-    private boolean sortAsc = true;
+    @SerializedName("sortasc")
+    private Boolean sortAsc = true;
 
     /**
      * Liefert ein Array fuer den vereinfachten Transport von Sortierattributen
      *
-     * @return Groesse der Liste und die aktuelle Sortierspalte
+     * @return current sort values
      */
-    public Object[] getValues(List subList) {
+    public Object[] getValues() {
         return new Object[]{
-                    subList.size(),
                     sortPath,
                     sortAsc
                 };
@@ -25,11 +24,11 @@ public class XTableSort {
     /*
      * Getters/Setters
      */
-    public boolean isSortAsc() {
+    public Boolean isSortAsc() {
         return sortAsc;
     }
 
-    public void setSortAsc(boolean sortAsc) {
+    public void setSortAsc(Boolean sortAsc) {
         this.sortAsc = sortAsc;
     }
 

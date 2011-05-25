@@ -70,27 +70,18 @@ public abstract class XDataTable {
 
                 XRequestInit req = gson.fromJson(requestParams, XRequestInit.class);
 
-                // Wenn keine Voreinstellungen fuer Sort vorhanden
-                if (sort.getSortPath() == null) {
-
-                    // und Parameter fuer den Sort existieren
-                    if (req.getSortpath() != null) {
-                        sort.setSortPath(req.getSortpath());
-                    }
+                // keine Voreinstellungen und Params fuer Paging vorhanden
+                if (paging.getRowCount() == null && req.getRowCount() != null) {
+                    paging.setRowCount(req.getRowCount());
                 }
 
-                // Wenn keine Voreinstellungen fuer Paging vorhanden
-                if (paging.getRowCount() == null) {
-
-                    // und Parameter fuer den Paging existieren
-                    if (req.getRowcount() != null) {
-                        paging.setRowCount(req.getRowcount());
-                    }
+                // keine Voreinstellungen und Params fuer Sort vorhanden
+                if (sort.getSortPath() == null && req.getSort().getSortPath() != null) {
+                    sort = req.getSort();
                 }
 
-                // Initialisierung der Filter
-                if (filterContainer.isEmpty()
-                        && req.getFilters() != null) {
+                // keine Voreinstellungen und Params fuer Filter vorhanden
+                if (filterContainer.isEmpty() && req.getFilters() != null) {
                     filterContainer.add(req.getFilters());
                 }
 
@@ -180,7 +171,7 @@ public abstract class XDataTable {
 
             {
                 put("body", getValues());
-                put("sort", sort.getValues(subList));
+                put("sort", sort.getValues());
                 put("paging", paging.getValues(subList));
                 put("filter", filterContainer.getValues(subList));
             }

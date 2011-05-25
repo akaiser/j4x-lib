@@ -1,14 +1,15 @@
 package org.j4x.request;
 
 import com.google.gson.annotations.SerializedName;
+import org.j4x.extension.XTableSort;
 import org.j4x.filter.XFilter;
 
 public class XRequestInit {
 
     @SerializedName("rowcount")
     private Integer rowCount;
-    @SerializedName("sortpath")
-    private String sortPath;
+    @SerializedName("sort")
+    private XTableSort sort;
     @SerializedName("filter")
     XFilter[] filters;
 
@@ -20,19 +21,19 @@ public class XRequestInit {
         this.filters = filters;
     }
 
-    public Integer getRowcount() {
+    public Integer getRowCount() {
         return rowCount;
     }
 
-    public void setRowcount(Integer rowCount) {
+    public void setRowCount(Integer rowCount) {
         this.rowCount = rowCount;
     }
 
-    public String getSortpath() {
-        return sortPath;
+    public XTableSort getSort() {
+        return sort;
     }
 
-    public void setSortpath(String sortPath) {
-        this.sortPath = sortPath;
+    public void setSort(XTableSort sort) {
+        this.sort = sort;
     }
 }

@@ -43,8 +43,8 @@
             this._xoverlay = $.xoverlay(this.element);
 
             this._restore('INIT',{
-                sortpath: this.options.sortpath,
                 rowcount: this.options.rowcount,
+                sort: this.options.sort,
                 filter: this.options.filter
             });
         },
@@ -302,7 +302,7 @@
                 $.toJSON(requestParams),
                 function(responce){
                 
-                    self._restoreHeader(responce.sort);
+                    self._restoreHeader(responce.sort, responce.body.length);
                     self._restoreBody(responce.body);
                     self._restoreFooter(responce.paging);
                     self._restoreFilter(responce.filter, requestType, requestParams.event);
@@ -329,7 +329,7 @@
         },
 
         // @todo describe params
-        _restoreHeader: function(params) {
+        _restoreHeader: function(params, entries) {
             var self = this;
 
             // header-columns of the table
@@ -341,7 +341,7 @@
                 var currentButton = $(e).find('button');
 
                 // sorting only possible with multiple entrys
-                if(params[0] > 1){
+                if(entries > 1){
 
                     var path = $(currentButton).attr('id');
 
@@ -352,10 +352,10 @@
                         self._toggleButtonStatus(currentButton, true);
 
                         // current column is responsible for sorting
-                        if(params[1] != null && path == params[1]){
+                        if(params[1] != null && path == params[0]){
 
                             // add correct sort icon
-                            if(params[2]){
+                            if(params[1]){
                                 $(currentButton).button('option','icons',{
                                     secondary:'ui-icon-carat-1-s'
                                 });
