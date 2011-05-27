@@ -76,7 +76,7 @@ public abstract class XDataTable {
                 }
 
                 // keine Voreinstellungen und Params fuer Sort vorhanden
-                if (sort.getSortPath() == null && req.getSort().getSortPath() != null) {
+                if (sort.getSortPath() == null && req.getSort() != null) {
                     sort = req.getSort();
                 }
 

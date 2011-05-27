@@ -290,6 +290,8 @@
             }
         },
 
+        //@todo
+        // @param {Object} requestType what is it
         _restore: function(requestType, requestParams) {
             var self = this;
 
@@ -340,7 +342,7 @@
                 // identify the nested button
                 var currentButton = $(e).find('button');
 
-                // sorting only possible with multiple entrys
+                // sorting only possible with multiple entries
                 if(entries > 1){
 
                     var path = $(currentButton).attr('id');
