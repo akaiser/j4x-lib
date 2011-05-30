@@ -1,0 +1,6 @@
+.ui-xoverlay {
+    background: url("images/anim_load.gif") no-repeat 50% 50% #AAAAAA;
+    cursor:wait;
+    opacity: 0.4;
+    position: absolute;
+}

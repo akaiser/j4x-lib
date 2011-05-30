@@ -10,17 +10,24 @@
  * http://j4x.org
  *
  * Depends:
- *   jquery.ui.core.js
- *   jquery.ui.widget.js
- *   jquery.ui.button.js
  *
- *   jquery.ui.core.css
- *   jquery.ui.theme.css
- *   jquery.ui.button.css
+ *  - jQuery UI js
+ *  jquery.ui.core.js
+ *  jquery.ui.widget.js
+ *  jquery.ui.button.js
  *
- *   jquery.delay.js
- *   jquery.json.js
- *   jquery.xoverlay.js
+ *  - jQuery UI css
+ *  jquery.ui.core.css
+ *  jquery.ui.theme.css
+ *  jquery.ui.button.css
+  *
+ *  - j4x UI css
+ *  jquery.ui.xoverlay.css
+ *
+ *  - jQuery Plugins
+ *  jquery.delay.js
+ *  jquery.json.js
+ *  jquery.xoverlay.js
  *
  */
 (function($) {
@@ -60,7 +67,7 @@
             $(o.column).each(function(i,e){
 
                 var column = $('<th />');
-                var button = $('<button style="width:100%">'+e.label+'</button>').button();
+                var button = $('<button>'+e.label+'</button>').button();
 
                 // check for width attr.
                 if(e.width){
@@ -100,8 +107,8 @@
 
             // pagiator elements
             this._pe = [
-            $('<span title="INFO" style="float:left; padding:6px" />'),
-            $('<button style="margin-right:0px" title="FIRST" />').button({
+            $('<span title="INFO" class="ui-xdatatable_footer_span" />'),
+            $('<button title="FIRST" />').button({
                 label: (paging && o.paging.first)?o.paging.first:'first',
                 icons:{
                     primary: 'ui-icon-arrowthickstop-1-w'
@@ -160,7 +167,7 @@
              * table creation
              */
             this._xdatatable = $(
-                '<table class="ui-widget" style="width:100%" cellpadding="0" cellspacing="0">'
+                '<table class="ui-widget ui-xdatatable" cellpadding="0" cellspacing="0">'
                 +'<thead class="ui-widget-header"></thead>'
                 +'<tbody class="ui-widget-content"></tbody>'
                 +'<tfoot class="ui-widget-header"></tfoot>'
@@ -169,7 +176,7 @@
             // append head and foot
             $('thead',this._xdatatable).append(headerRow);
             $('tfoot',this._xdatatable).append($('<tr />')
-                .append($('<td style="border: 1px solid #bbb;" />').attr('colspan', $('th', headerRow).length)
+                .append($('<td />').attr('colspan', $('th', headerRow).length)
                     .append(pagingDiv)));
 
             // finally append table to this element
@@ -211,13 +218,11 @@
                             // bind events for label setup
                             $(filterElement).blur(function(){
                                 if($.trim($(this).val()).length==0){
-                                    $(this).val(e.label).css('color','#aaa');
-                                //$(this).val(e.label).addClass('ui-state-error-text');
+                                    $(this).val(e.label).addClass('ui-xdatatable_input_label_text');
                                 }
                             }).focus(function(){
                                 if($.trim($(this).val())==e.label){
-                                    $(this).val('').css('color','');
-                                //$(this).val('').removeClass('ui-state-error-text');
+                                    $(this).val('').removeClass('ui-xdatatable_input_label_text');
                                 }
                             });
 
@@ -280,6 +285,7 @@
             if((valueLength == 0 || valueLength > 1)
                 && (filter.filtervalue != filterValue)){
 
+                // only if there is no label and labelval. is not the value
                 if(!filter.label || (filter.label && filter.label != filterValue)){
                     filter.filtervalue = filterValue;
                     this._restore('FILTER', filter);
@@ -398,8 +404,8 @@
             // iterate each row entry
             $(params).each(function(){
 
-                // create new row with hover and click event
-                newRow = $('<tr style="cursor:pointer" />');
+                // create new row
+                newRow = $('<tr />');
 
                 // iterate each column
                 $(this).each(function(i,e){
@@ -412,21 +418,11 @@
                         newCell = $('<td>'+e+'</td>');
 
                         if(self._cellAlignArray[i-1]){
-                            $(newCell).attr('align',self._cellAlignArray[i-1]);
+                            $(newCell).css('text-align',self._cellAlignArray[i-1]);
                         }
 
                         $(newRow).append(newCell);
                     }
-                });
-
-                // some cell border... #E6E6E6
-                $('td:first',newRow).css({
-                    'padding-left':'4px',
-                    'border-left':'1px solid #D3D3D3'
-                });
-                $('td:last',newRow).css({
-                    'padding':'2px',
-                    'border-right':'1px solid #D3D3D3'
                 });
 
                 // append row to the body
@@ -438,23 +434,16 @@
 
             // add hover and select binding
             $('tr', tableBody)
-            //.hover(function(){
-            //    $(this).toggleClass('ui-state-hover');
-            //})
+            .hover(function(){
+                $(this).toggleClass('ui-state-hover');
+            })
             .click(function(){
 
-                // switch selected row
-                $(self._selectedRow).css({
-                    'cursor':'pointer',
-                    'text-shadow':''
-                });
-                self._selectedRow = $(this).css({
-                    'cursor':'default',
-                    'text-shadow':'1px 1px 1px #666'
-                });
+                $(this).toggleClass('ui-xdatatable_selected_row');
 
-            //$(self._selectedRow).removeClass('ui-state-focus').css('cursor','pointer');
-            //self._selectedRow = $(newRow).addClass('ui-state-focus').css('cursor','default');
+                // switch selected row
+                $(self._selectedRow).removeClass('ui-xdatatable_selected_row');
+                self._selectedRow = $(this).addClass('ui-xdatatable_selected_row');
             });
 
             // replace current body
@@ -495,25 +484,31 @@
                 // Das Select-Element
                 var filterElement = $('#' + e[0]);
 
-                // Unterscheidung des Typs
+                // check the event
                 switch(e[1]){
 
-                    // Ein Text-Element, setzen der Werte (IE und Chrome)
+                    // getting the values (IE and Chrome workaround)
                     case 'INPUT':
 
                         // updating only on INIT or PAGING-RELOAD event
-                        if(requestType == 'INIT' || eventType == 'RELOAD'){
+                        if(requestType === 'INIT' || eventType === 'RELOAD'){
+
+                            // set the value
                             $(filterElement).val(e[2]);
 
-                            // perform post init and reload actions on filter
-                            var filterValue;
+                            // init the filter config
                             $(self.options.filter).each(function(i,f){
-                                if(f.label && f.id == e[0]){
-                                    
-                                    filterValue = $.trim($(filterElement).val());
 
-                                    if(filterValue.length == 0){
-                                        $(filterElement).val(f.label).css('color','#aaa');
+                                // there is a label attr and filter is present
+                                if(f.label && f.id === e[0]){
+                                    
+                                    var filterValue = $.trim($(filterElement).val());
+
+                                    // set the default label
+                                    if(filterValue.length === 0){
+                                        $(filterElement)
+                                        .val(f.label)
+                                        .addClass('ui-xdatatable_input_label_text');
                                     }
                                 }
                             });
@@ -532,7 +527,7 @@
 
                             selectedAttribute = '';
 
-                            if(value == selectedValues){
+                            if(value === selectedValues){
                                 selectedAttribute = 'selected="selected" ';
                                 slelected = true;
                             }
@@ -580,7 +575,7 @@
 
         // Helper to en/disable a button
         _toggleButtonStatus: function(obj, enable) {
-            if(enable==true){
+            if(enable===true){
                 if($(obj).button('option','disabled')){
                     $(obj).button('enable');
                 }
