@@ -1,13 +1,13 @@
 package org.j4x.filter;
 
-import org.j4x.util.XComparator;
 import org.j4x.util.XHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Helfer-Klasse fuer das Registrieren von XFilter-Instanzen der Obeflaeche
@@ -173,7 +173,7 @@ public class XFilterContainer {
     private Object[] getOptions(XFilter filter, List subList) {
 
         // Liste mit gefilterten Objekten
-        List<Object> temp = new ArrayList<Object>();
+        Set<Object> temp = new TreeSet<Object>();
 
         String[] methodPath = XHelper.getMethodPath(filter.getFilterPath());
 
@@ -184,28 +184,13 @@ public class XFilterContainer {
                 Method om = null;
                 Object oc = o;
 
-                // Der Eintrag gilt als valide
-                boolean isValid = true;
-
                 // Durchlauf aller verschachtelten Methoden
                 for (String method : methodPath) {
                     om = oc.getClass().getMethod(method, new Class[]{});
                     oc = om.invoke(oc, new Object[]{});
                 }
 
-                // Durchlauf und Duplikate vermeiden
-                for (Object entry : temp) {
-                    if (entry.toString().equals(oc.toString())) {
-                        isValid = false;
-                        //break;
-                    }
-                }
-
-
-                // Sonst Einfuegen in temp
-                if (isValid) {
-                    temp.add(oc);
-                }
+                temp.add(oc);
 
             } catch (IllegalAccessException ex) {
             } catch (IllegalArgumentException ex) {
@@ -214,10 +199,6 @@ public class XFilterContainer {
             } catch (SecurityException ex) {
             }
         }
-
-        //Sortierung durchfuehren
-        Collections.sort(temp, new XComparator(true));
-
         return temp.toArray();
     }
 
