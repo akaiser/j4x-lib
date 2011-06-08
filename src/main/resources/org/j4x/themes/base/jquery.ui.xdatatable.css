@@ -4,10 +4,13 @@
 .ui-xdatatable tbody tr {
     cursor:pointer;
 }
+.ui-xdatatable tfoot button {
+    margin: 0px;
+}
 .ui-xdatatable tfoot tr td {
     border: 1px solid #bbbbbb;
 }
-.ui-xdatatable tbody tr td:first-child, .ui-xdatatable tbody tr td:last-child {
+.ui-xdatatable tbody tr td {
     padding: 4px;
 }
 .ui-xdatatable tbody tr td:first-child {

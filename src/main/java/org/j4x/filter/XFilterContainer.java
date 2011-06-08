@@ -48,13 +48,16 @@ public class XFilterContainer {
      */
     public List filter(List mainList) {
 
-        // Liste mit gefilterten Objekten
+        // list with filtered objects
         List<Object> temp = new ArrayList<Object>();
 
-        // Durchlauf aller Objekte der Liste
+        // value to check
+        String objValue = null;
+
+        // iterate over all objects in list
         for (Object o : mainList) {
 
-            // Der Eintrag gilt als valide
+            // value is valid
             boolean isValid = true;
 
             // Durchlauf aller verfuegbarer XFilter
@@ -72,24 +75,46 @@ public class XFilterContainer {
                             oc = om.invoke(oc, new Object[]{});
                         }
 
-                        // @todo selectmultiple
-                        //isValid = false;
-                        // iterate over all filter values - esp. for selectmultiple
-                        //for (Object filterValue : filter.getFilterValue()) {
-                        // Der Wert trifft zu
-                        //if (oc.toString().toUpperCase().matches(".*" + filterValue.toString().toUpperCase() + ".*")) {
-                        // Objekt ist valide
-                        //isValid = true;
-                        //break;
-                        //}
-                        //}
+                        // set the value
+                        objValue = oc.toString();
 
-                        // Der Wert trifft nicht zu
-                        if (!oc.toString().toUpperCase().matches(".*" + filter.getFilterValue().toUpperCase() + ".*")) {
+                        switch (filter.getFilterType()) {
 
-                            // Objekt ist nicht valide
-                            isValid = false;
-                            break;
+                            case INPUT: {
+
+                                // does not match
+                                if (!objValue.toUpperCase().matches(".*" + filter.getFilterValue().toUpperCase() + ".*")) {
+                                    isValid = false;
+                                    break;
+                                }
+                                break;
+                            }
+
+                            case SELECTONE: {
+
+                                // is not equal
+                                if (!objValue.equals(filter.getFilterValue())) {
+                                    isValid = false;
+                                    break;
+                                }
+                                break;
+                            }
+
+                            case SELECTMULTIPLE: {
+                                // @todo selectmultiple
+                                /*
+                                isValid = false;
+                                iterate over all filter values - esp. for selectmultiple
+                                for (Object filterValue : filter.getFilterValue()) {
+                                
+                                if (oc.toString().toUpperCase().matches(".*" + filterValue.toString().toUpperCase() + ".*")) {
+                                isValid = true;
+                                break;
+                                }
+                                }
+                                 */
+                                break;
+                            }
                         }
 
                     } catch (IllegalAccessException ex) {
@@ -101,7 +126,7 @@ public class XFilterContainer {
                 }
             }
 
-            // Objekt valide, dann eintragen in die Liste
+            // object is valid, add to list
             if (isValid) {
                 temp.add(o);
             }
@@ -142,12 +167,14 @@ public class XFilterContainer {
                 case SELECTMULTIPLE:
 
                     // @todo
+                    /*
                     filterData = new Object[]{
-                                filter.getElementId(),
-                                filter.getFilterType().toString(),
-                                getOptions(filter, subList),
-                                filter.getFilterValue()
-                            };
+                    filter.getElementId(),
+                    filter.getFilterType().toString(),
+                    getOptions(filter, subList),
+                    filter.getFilterValue()
+                    };
+                     */
                     break;
             }
 

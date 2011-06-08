@@ -22,6 +22,7 @@
  *  jquery.ui.button.css
   *
  *  - j4x UI css
+ *  jquery.ui.xdatatable.css
  *  jquery.ui.xoverlay.css
  *
  *  - jQuery Plugins
@@ -144,7 +145,7 @@
             $(this._pe).each(function(i,e){
 
                 // only buttons are click- and removeable
-                if(i!=0){
+                if(i!==0){
                     $(e).click(function(){
 
                         // perform paging-event
@@ -159,9 +160,6 @@
                 }
                 $(pagingDiv).append(e);
             });
-
-            // button ui fixing
-            $('button',pagingDiv).css('margin','0px');
 
             /**
              * table creation
