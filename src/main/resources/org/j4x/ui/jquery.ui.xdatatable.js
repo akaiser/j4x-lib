@@ -1,6 +1,8 @@
 /*
  * jQuery UI XDataTable
  *
+ * This widget facilitates the transport and representation of data
+ *
  * Copyright 2011, Albert Kaiser
  * under the GPL Version 2 licenses.
  *
@@ -11,6 +13,11 @@
  *
  * Depends:
  *
+ *  - jQuery Plugins
+ *  jquery.delay.js
+ *  jquery.json.js
+ *  jquery.xoverlay.js
+ *  
  *  - jQuery UI js
  *  jquery.ui.core.js
  *  jquery.ui.widget.js
@@ -20,16 +27,9 @@
  *  jquery.ui.core.css
  *  jquery.ui.theme.css
  *  jquery.ui.button.css
-  *
+ *
  *  - j4x UI css
  *  jquery.ui.xdatatable.css
- *  jquery.ui.xoverlay.css
- *
- *  - jQuery Plugins
- *  jquery.delay.js
- *  jquery.json.js
- *  jquery.xoverlay.js
- *
  */
 (function($) {
     $.widget( 'ui.xdatatable', {
@@ -108,33 +108,36 @@
 
             // pagiator elements
             this._pe = [
-            $('<span title="INFO" class="ui-xdatatable_footer_span" />'),
+            $('<span title="INFO" class="ui-xdatatable_footer_span">'
+                + ((paging && o.paging.lbl_entry)?o.paging.lbl_entry:'entry') + ': <span /> | '
+                + ((paging && o.paging.lbl_page)?o.paging.lbl_page:'page') + ': <span />' 
+                + '</span>'),
             $('<button title="FIRST" />').button({
-                label: (paging && o.paging.first)?o.paging.first:'first',
+                label: (paging && o.paging.lbl_first)?o.paging.lbl_first:'first',
                 icons:{
                     primary: 'ui-icon-arrowthickstop-1-w'
                 }
             }),
             $('<button title="PREVIOUS" />').button({
-                label: (paging && o.paging.previous)?o.paging.previous:'previous',
+                label: (paging && o.paging.lbl_previous)?o.paging.lbl_previous:'previous',
                 icons:{
                     primary: 'ui-icon-arrowthick-1-w'
                 }
             }),
             $('<button title="NEXT" />').button({
-                label: (paging && o.paging.next)?o.paging.next:'next',
+                label: (paging && o.paging.lbl_next)?o.paging.lbl_next:'next',
                 icons:{
                     secondary: 'ui-icon-arrowthick-1-e'
                 }
             }),
             $('<button title="LAST" />').button({
-                label: (paging && o.paging.last)?o.paging.last:'last',
+                label: (paging && o.paging.lbl_last)?o.paging.lbl_last:'last',
                 icons:{
                     secondary: 'ui-icon-arrowthickstop-1-e'
                 }
             }),
             $('<button title="RELOAD" />').button({
-                label: (paging && o.paging.reload)?o.paging.reload:'reload'
+                label: (paging && o.paging.lbl_reload)?o.paging.lbl_reload:'reload'
             })
             ];
 
@@ -294,8 +297,10 @@
             }
         },
 
-        // @param {String} requestType
-        // @param {Object} requestParams
+        /*
+         * @param {String} requestType
+         * @param {Object} requestParams @todo describe
+         */
         _call: function(requestType, requestParams) {
             var self = this;
 
@@ -307,7 +312,7 @@
             switch(typeof self.options.datasource){
                 
                 // javascript object request
-                case 'object':{     
+                case 'object':{
                     self.options.datasource.getContent(requestType,toJSON,
                         function(responce){
                             self._restore(requestType, requestParams.event, $.parseJSON(responce));
@@ -340,63 +345,6 @@
 
             // hide overlay
             this._xoverlay.show(false);
-        },
-
-        // @todo describe params
-        _restoreHeader: function(params, entries) {
-            var self = this;
-
-            // header-columns of the table
-            var headerColumns = $('thead th', this._xdatatable);
-
-            $(headerColumns).each(function(i,e){
-
-                // identify the nested button
-                var currentButton = $(e).find('button');
-
-                // sorting only possible with multiple entries
-                if(entries > 1){
-
-                    var path = $(currentButton).attr('id');
-
-                    // sorting only possible if there is a path
-                    if(path){
-
-                        // enable the button
-                        self._toggleButtonStatus(currentButton, true);
-
-                        // current column is responsible for sorting
-                        if(params[1] != null && path == params[0]){
-
-                            // add correct sort icon
-                            if(params[1]){
-                                $(currentButton).button('option','icons',{
-                                    secondary:'ui-icon-carat-1-s'
-                                });
-                            }else{
-                                $(currentButton).button('option','icons',{
-                                    secondary:'ui-icon-carat-1-n'
-                                });
-                            }
-                        }else{
-
-                            // handle other columns/buttons and remove the icon
-                            if($(currentButton).button('option','icons').secondary){
-                                $(currentButton).button('option','icons',{
-                                    secondary:null
-                                });
-                            }
-                        }
-                    }
-                }else{
-
-                    // disable the button
-                    self._toggleButtonStatus(currentButton, false);
-                }
-
-            // remove hover and focus
-            //self._removeHoverAndFocus(currentButton);
-            });
         },
 
         // @todo describe params
@@ -456,6 +404,64 @@
             $('tbody', self._xdatatable).replaceWith(tableBody);
         },
 
+
+        // @todo describe params
+        _restoreHeader: function(params, entries) {
+            var self = this;
+
+            // header-columns of the table
+            var headerColumns = $('thead th', this._xdatatable);
+
+            $(headerColumns).each(function(i,e){
+
+                // identify the nested button
+                var currentButton = $(e).find('button');
+
+                // sorting only possible with multiple entries
+                if(entries > 1){
+
+                    var path = $(currentButton).attr('id');
+
+                    // sorting only possible if there is a path
+                    if(path){
+
+                        // enable the button
+                        self._toggleButtonStatus(currentButton, true);
+
+                        // current column is responsible for sorting
+                        if(params[1] != null && path == params[0]){
+
+                            // add correct sort icon
+                            if(params[1]){
+                                $(currentButton).button('option','icons',{
+                                    secondary:'ui-icon-carat-1-s'
+                                });
+                            }else{
+                                $(currentButton).button('option','icons',{
+                                    secondary:'ui-icon-carat-1-n'
+                                });
+                            }
+                        }else{
+
+                            // handle other columns/buttons and remove the icon
+                            if($(currentButton).button('option','icons').secondary){
+                                $(currentButton).button('option','icons',{
+                                    secondary:null
+                                });
+                            }
+                        }
+                    }
+                }else{
+
+                    // disable the button
+                    self._toggleButtonStatus(currentButton, false);
+                }
+
+            // remove hover and focus
+            //self._removeHoverAndFocus(currentButton);
+            });
+        },
+        
         // @todo describe params
         _restoreFooter: function(params) {
             var self = this;
@@ -463,16 +469,16 @@
             $(params).each(function(i,e){
                 
                 // get the info
-                if(i==0){
-                    $(self._pe[i]).text(e);
-
-                // do work with the buttons
+                if(i===0){
+                    var spans = $('span',self._pe[i]), values = e.split('|');
+                    $(spans[0]).text(values[0]);
+                    $(spans[1]).text(values[1]);
                 }else{
 
                     // remove hover and focus
                     self._removeHoverAndFocus(self._pe[i]);
 
-                    // de/activate the buttons
+                    // de/activate buttons
                     self._toggleButtonStatus(self._pe[i], e);
                 }
             });
@@ -522,10 +528,10 @@
 
                         break;
 
-                    // Ein Select-Element, setzen der selected-option
+                    // create select options and set the selection
                     case 'SELECTONE': {
 
-                        var options = '', selectedValues = e[3], selectedAttribute, slelected = false;
+                        var options = '', selectedValues = e[3], selectedAttribute, selected = false;
 
                         $(e[2]).each(function() {
 
@@ -535,19 +541,21 @@
 
                             if(value === selectedValues){
                                 selectedAttribute = 'selected="selected" ';
-                                slelected = true;
+                                selected = true;
                             }
 
                             // create options
                             options += '<option '+selectedAttribute+'value="'+value+'">'+ value +'</option>';
                         });
 
-                        if(slelected){
+                        // selection already done
+                        if(selected){
                             selectedAttribute = '';
                         }else{
                             selectedAttribute = 'selected="selected" ';
                         }
 
+                        // add empty option
                         options = '<option '+selectedAttribute+'></option>'+options;
 
                         // remove present options
@@ -568,7 +576,7 @@
         },
 
         
-        // Helper for removing hover and focus
+        // helper for removing hover and focus
         _removeHoverAndFocus: function(obj) {
             if($(obj).hasClass('ui-state-hover')){
                 $(obj).removeClass('ui-state-hover');
@@ -579,7 +587,7 @@
             }
         },
 
-        // Helper to en/disable a button
+        // helper to en/disable a button
         _toggleButtonStatus: function(obj, enable) {
             if(enable===true){
                 if($(obj).button('option','disabled')){

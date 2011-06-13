@@ -10,8 +10,13 @@
  * @version 1.0 (04.04.11)
  *
  * http://j4x.org
+ * 
+ * Depends:
+ * 
+ *  - j4x UI css
+ *  jquery.ui.xoverlay.css
  *
- * @param object to overlay
+ * @param {element} to overlay
  */
 (function($) {
     $.xoverlay = function(obj){
@@ -37,7 +42,7 @@
                 'left':offset.left
             });
 
-            // de/activate
+            // de-/activate
             visible ? $(xoverlay).show() : $(xoverlay).hide();
         }
         return this;

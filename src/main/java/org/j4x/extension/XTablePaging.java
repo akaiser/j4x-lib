@@ -40,45 +40,44 @@ public class XTablePaging {
      */
     public List getValues(List subList) {
 
-        // Berechnung der Anzahl von Eintraegen
+        int subListSize = subList.size();
+
+
         if (rowCount != null) {
+
+            // calculate the number of entries
             int itemsFrom = !subList.isEmpty()
                     ? pageNumber * rowCount - rowCount + 1
                     : 0;
 
-            int itemsTo = pageNumber * rowCount > subList.size()
-                    ? subList.size()
+            int itemsTo = pageNumber * rowCount > subListSize
+                    ? subListSize
                     : pageNumber * rowCount;
 
-            // Berechnung der Anzahl von Seiten
-            int pagesSum = (subList.size() % rowCount == 0)
-                    ? (subList.size() / rowCount)
-                    : (subList.size() / rowCount + 1);
+            // calculate the number of pages
+            int pagesSum = subListSize % rowCount == 0
+                    ? subListSize / rowCount
+                    : subListSize / rowCount + 1;
 
             int pagesFrom = pagesSum != 0
                     ? pageNumber
                     : 0;
 
-            // Setzen von de-/aktiviert Eigenschaft der Buttons
-            boolean previous, next;
-            previous = pagesFrom <= 1 ? false : true;
-            next = pagesSum <= pagesFrom ? false : true;
+            // de-/activate the buttons
+            boolean previous = pagesFrom <= 1 ? false : true,
+                    next = pagesSum <= pagesFrom ? false : true;
 
-            // Bauen des Arrays
-            return Arrays.asList("entry: " + itemsFrom
-                    + " - " + itemsTo
-                    + " / " + subList.size()
-                    + " | page: "
-                    + pagesFrom
-                    + " / "
-                    + pagesSum, previous, previous, next, next);
+            return Arrays.asList(
+                    itemsFrom + " - " + itemsTo + " / " + subListSize
+                    + "|"
+                    + pagesFrom + " / " + pagesSum,
+                    previous, previous, next, next);
 
         } else {
-
-            return Arrays.asList("entry: "
-                    + (!subList.isEmpty() ? 1 : 0)
-                    + " - "
-                    + subList.size());
+            return Arrays.asList(
+                    (!subList.isEmpty() ? 1 : 0) + " - " + subListSize
+                    + "|"
+                    + 1 + " / " + 1);
         }
     }
 
