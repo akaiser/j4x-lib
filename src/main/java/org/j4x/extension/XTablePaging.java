@@ -1,5 +1,6 @@
 package org.j4x.extension;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class XTablePaging {
@@ -37,7 +38,7 @@ public class XTablePaging {
      *
      * @return paginatorValues
      */
-    public Object[] getValues(List subList) {
+    public List getValues(List subList) {
 
         // Berechnung der Anzahl von Eintraegen
         if (rowCount != null) {
@@ -64,31 +65,20 @@ public class XTablePaging {
             next = pagesSum <= pagesFrom ? false : true;
 
             // Bauen des Arrays
-            return new Object[]{
-                        "entry: "
-                        + itemsFrom
-                        + " - " + itemsTo
-                        + " / " + subList.size()
-                        + " | page: "
-                        + pagesFrom
-                        + " / "
-                        + pagesSum,
-                        previous,
-                        previous,
-                        next,
-                        next
-                    };
+            return Arrays.asList("entry: " + itemsFrom
+                    + " - " + itemsTo
+                    + " / " + subList.size()
+                    + " | page: "
+                    + pagesFrom
+                    + " / "
+                    + pagesSum, previous, previous, next, next);
 
         } else {
 
-            int itemsFrom = !subList.isEmpty() ? 1 : 0;
-
-            return new Object[]{
-                        "entry: "
-                        + itemsFrom
-                        + " - "
-                        + subList.size()
-                    };
+            return Arrays.asList("entry: "
+                    + (!subList.isEmpty() ? 1 : 0)
+                    + " - "
+                    + subList.size());
         }
     }
 

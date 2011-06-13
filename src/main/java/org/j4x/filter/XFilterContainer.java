@@ -143,27 +143,29 @@ public class XFilterContainer {
         // iterate over all registered filters
         for (XFilter filter : filterList) {
 
-            Object filterData = null;
+            List filterData = null;
 
             // output depends on filtertype
             switch (filter.getFilterType()) {
                 case INPUT:
-                case SUGGEST:
-                    filterData = new Object[]{
-                                filter.getElementId(),
-                                filter.getFilterType().toString(),
-                                filter.getFilterValue()
-                            };
-                    break;
-                case SELECTONE:
+                case SUGGEST: {
+                    filterData = Arrays.asList(
+                            filter.getElementId(),
+                            filter.getFilterType().toString(),
+                            filter.getFilterValue());
 
-                    filterData = new Object[]{
-                                filter.getElementId(),
-                                filter.getFilterType().toString(),
-                                getOptions(filter, subList),
-                                filter.getFilterValue()
-                            };
                     break;
+                }
+                case SELECTONE: {
+
+                    filterData = Arrays.asList(
+                            filter.getElementId(),
+                            filter.getFilterType().toString(),
+                            getOptions(filter, subList),
+                            filter.getFilterValue());
+
+                    break;
+                }
                 case SELECTMULTIPLE:
 
                     // @todo

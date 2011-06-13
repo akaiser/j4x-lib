@@ -50,7 +50,7 @@
             // init overlay functionality
             this._xoverlay = $.xoverlay(this.element);
 
-            this._restore('INIT',{
+            this._call('INIT',{
                 rowcount: this.options.rowcount,
                 sort: this.options.sort,
                 filter: this.options.filter
@@ -89,7 +89,7 @@
                     $(button).click(function() {
 
                         // perform sort-event
-                        self._restore('SORT', {
+                        self._call('SORT', {
                             sortpath: e.sortpath
                         });
                     });
@@ -149,7 +149,7 @@
                     $(e).click(function(){
 
                         // perform paging-event
-                        self._restore('PAGING', {
+                        self._call('PAGING', {
                             event: $(e).attr('title')
                         });
                     });
@@ -260,7 +260,7 @@
                             $(filterElement).change(function(){
                                 e.filtervalue = $.trim($(this).val());
                                 //e.filtervalue = $.trim($(this).attr('value'));
-                                self._restore('FILTER', e);
+                                self._call('FILTER', e);
                             });
                            
                         //interesting for multiselect
@@ -286,7 +286,7 @@
                 // only if there is no label and labelval. is not the value
                 if(!filter.label || (filter.label && filter.label != filterValue)){
                     filter.filtervalue = filterValue;
-                    this._restore('FILTER', filter);
+                    this._call('FILTER', filter);
                 }
                 $(element).removeClass('ui-state-error-text');
             }else{
@@ -294,44 +294,52 @@
             }
         },
 
-        //@todo
-        // @param {Object} requestType what is it
-        _restore: function(requestType, requestParams) {
+        // @param {String} requestType
+        // @param {Object} requestParams
+        _call: function(requestType, requestParams) {
             var self = this;
 
             // show overlay
             self._xoverlay.show(true);
             
-            // perform remote request
-            self.options.datasource.getContent(
-                requestType,
-                $.toJSON(requestParams),
-                function(responce){
+            var toJSON = $.toJSON(requestParams);
+            
+            switch(typeof self.options.datasource){
                 
-                    self._restoreHeader(responce.sort, responce.body.length);
-                    self._restoreBody(responce.body);
-                    self._restoreFooter(responce.paging);
-                    self._restoreFilter(responce.filter, requestType, requestParams.event);
-
-                    // hide overlay
-                    self._xoverlay.show(false);
-                });
-
-        /*
-            $.ajax({
-                url: self.options.datasource,
-                dataType: "json",
-                data: "requestType="+requestType+"&requestParams="+$.toJSON(requestParams),
-                success: function(responce){
-                    self._restoreBody(responce[0]);
-                    self._restoreHeader(responce[1]);
-                    self._restoreFooter(responce[2]);
-                    self._restoreFilter(responce[3], requestType, requestParams.event);
-
-                    // hide overlay
-                    self._xoverlay.show(false);
+                // javascript object request
+                case 'object':{     
+                    self.options.datasource.getContent(requestType,toJSON,
+                        function(responce){
+                            self._restore(requestType, requestParams.event, $.parseJSON(responce));
+                        });
+                        
+                    break;
                 }
-            });*/
+                
+                // servlet or remote page request
+                case 'string':{
+                    $.ajax({
+                        url: self.options.datasource,
+                        dataType: "json",
+                        data: "requestType="+requestType+"&requestParams="+toJSON,
+                        success: function(responce){
+                            self._restore(requestType, requestParams.event, responce);
+                        }
+                    });
+                    
+                    break;
+                }
+            }
+        },
+        
+        _restore: function(requestType, eventType, responce) {
+            this._restoreBody(responce[0]);
+            this._restoreHeader(responce[1], responce[0].length);
+            this._restoreFooter(responce[2]);
+            this._restoreFilter(responce[3], requestType, eventType);
+
+            // hide overlay
+            this._xoverlay.show(false);
         },
 
         // @todo describe params

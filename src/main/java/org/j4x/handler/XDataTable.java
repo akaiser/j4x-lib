@@ -1,6 +1,7 @@
 package org.j4x.handler;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import org.j4x.constants.XTableContstants.TableRequestType;
 import org.j4x.extension.XTablePaging;
 import org.j4x.extension.XTableSort;
@@ -59,7 +60,7 @@ public abstract class XDataTable {
      * @param requestParams as JSON-String
      * @return Array mit Daten und Informationen zum Sort und Paging
      */
-    public HashMap getContent(String requestType, String requestParams) {
+    public String getContent(String requestType, String requestParams) {
 
         TableRequestType rt = TableRequestType.valueOf(requestType);
 
@@ -167,24 +168,13 @@ public abstract class XDataTable {
             }
         }
 
-        return new HashMap<String, Object>() {
-
-            {
-                put("body", getValues());
-                put("sort", sort.getValues());
-                put("paging", paging.getValues(subList));
-                put("filter", filterContainer.getValues(subList));
-            }
-        };
-
-        /*
-        // create responce
-        return new Object[]{
-        getValues(),
-        sort.getValues(subList),
-        paging.getValues(subList),
-        filterContainer.getValues(subList)
-        };*/
+        // return json responce
+        return gson.toJson(new Object[]{
+                    getValues(),
+                    sort.getValues(),
+                    paging.getValues(subList),
+                    filterContainer.getValues(subList)
+                });
     }
 
     /**
