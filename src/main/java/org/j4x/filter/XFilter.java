@@ -4,10 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import org.j4x.constants.XTableContstants.TableFilterType;
 
 /**
- * Helfer-Klasse fuer Elemente der Obeflaeche
- *
  * @author akaiser
- * @version 0.2 (01.03.11)
+ * @version 0.3 (01.03.11)
  */
 public class XFilter {
 
@@ -54,29 +52,22 @@ public class XFilter {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final XFilter other = (XFilter) obj;
-        if ((this.elementId == null) ? (other.elementId != null) : !this.elementId.equals(other.elementId)) {
-            return false;
-        }
-        if ((this.filterPath == null) ? (other.filterPath != null) : !this.filterPath.equals(other.filterPath)) {
-            return false;
-        }
-        if (this.filterType != other.filterType) {
-            return false;
-        }
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        XFilter xFilter = (XFilter) o;
+
+        return !(elementId != null ? !elementId.equals(xFilter.elementId) : xFilter.elementId != null) &&
+                !(filterPath != null ? !filterPath.equals(xFilter.filterPath) : xFilter.filterPath != null) &&
+                filterType == xFilter.filterType;
     }
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        return hash;
+        int result = elementId != null ? elementId.hashCode() : 0;
+        result = 31 * result + (filterPath != null ? filterPath.hashCode() : 0);
+        result = 31 * result + (filterType != null ? filterType.hashCode() : 0);
+        return result;
     }
 }
