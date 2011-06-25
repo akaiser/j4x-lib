@@ -1,24 +1,22 @@
 package org.j4x.handler;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import org.j4x.constants.XTableContstants.TableRequestType;
 import org.j4x.extension.XTablePaging;
 import org.j4x.extension.XTableSort;
 import org.j4x.filter.XFilter;
-import org.j4x.util.XComparator;
 import org.j4x.filter.XFilterContainer;
 import org.j4x.request.XRequestInit;
 import org.j4x.request.XRequestPaging;
 import org.j4x.request.XRequestSort;
+import org.j4x.util.XComparator;
 import org.j4x.util.XHelper;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**
- *
  * Provides filters, sort, and caching functionality for
  * simplified communication with the client
  *
@@ -56,7 +54,7 @@ public abstract class XDataTable {
      * Schnittstelle zur Oberflaeche. Liefert eine Liste fuer den vereinfachten
      * Transport von Objektattributen der gesamten Tabelle
      *
-     * @param requestType types like [INIT, SORT, PAGING, FILTER]
+     * @param requestType   types like [INIT, SORT, PAGING, FILTER]
      * @param requestParams as JSON-String
      * @return Array mit Daten und Informationen zum Sort und Paging
      */
@@ -116,7 +114,7 @@ public abstract class XDataTable {
                     if (sort.getSortPath() != null && sort.getSortPath().equals(req.getSortPath())) {
 
                         // Dann Sortierreihenfolge drehen
-                        sort.setSortAsc(sort.isSortAsc() ? false : true);
+                        sort.setSortAsc(!sort.isSortAsc());
                     } // Sonst die Sortierung aendern
                     else {
 
@@ -170,11 +168,11 @@ public abstract class XDataTable {
 
         // return json responce
         return gson.toJson(new Object[]{
-                    getValues(),
-                    sort.getValues(),
-                    paging.getValues(subList),
-                    filterContainer.getValues(subList)
-                });
+                getValues(),
+                sort.getValues(),
+                paging.getValues(subList),
+                filterContainer.getValues(subList)
+        });
     }
 
     /**
@@ -233,7 +231,7 @@ public abstract class XDataTable {
     }
 
     /**
-     *  Filterung der Subliste durchfuehren
+     * Filterung der Subliste durchfuehren
      */
     private void filterSubList() {
 
@@ -244,7 +242,7 @@ public abstract class XDataTable {
     }
 
     /**
-     *  Sortierung der Subliste durchfuehren
+     * Sortierung der Subliste durchfuehren
      */
     private void sortSubList() {
         if (sort.getSortPath() != null) {

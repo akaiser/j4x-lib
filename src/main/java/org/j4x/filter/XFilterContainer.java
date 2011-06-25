@@ -1,13 +1,10 @@
 package org.j4x.filter;
 
 import org.j4x.util.XHelper;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Helfer-Klasse fuer das Registrieren von XFilter-Instanzen der Obeflaeche
@@ -44,7 +41,8 @@ public class XFilterContainer {
     /**
      * Filterung der Liste anhand von gegebenen Filterelementen
      *
-     * @param mainList  Die Liste mit allen Elementen
+     * @param mainList  with all objects
+     * @return filtered object list
      */
     public List filter(List mainList) {
 
@@ -52,7 +50,7 @@ public class XFilterContainer {
         List<Object> temp = new ArrayList<Object>();
 
         // value to check
-        String objValue = null;
+        String objValue;
 
         // iterate over all objects in list
         for (Object o : mainList) {
@@ -66,7 +64,7 @@ public class XFilterContainer {
                 if (filter.getFilterValue() != null
                         && !filter.getFilterValue().isEmpty()) {
                     try {
-                        Method om = null;
+                        Method om;
                         Object oc = o;
 
                         // Durchlauf aller verschachtelten Methoden
@@ -117,11 +115,11 @@ public class XFilterContainer {
                             }
                         }
 
-                    } catch (IllegalAccessException ex) {
-                    } catch (IllegalArgumentException ex) {
-                    } catch (InvocationTargetException ex) {
-                    } catch (NoSuchMethodException ex) {
-                    } catch (SecurityException ex) {
+                    } catch (IllegalAccessException ignored) {
+                    } catch (IllegalArgumentException ignored) {
+                    } catch (InvocationTargetException ignored) {
+                    } catch (NoSuchMethodException ignored) {
+                    } catch (SecurityException ignored) {
                     }
                 }
             }
@@ -210,7 +208,7 @@ public class XFilterContainer {
         for (Object o : subList) {
 
             try {
-                Method om = null;
+                Method om;
                 Object oc = o;
 
                 // Durchlauf aller verschachtelten Methoden
@@ -221,11 +219,11 @@ public class XFilterContainer {
 
                 temp.add(oc);
 
-            } catch (IllegalAccessException ex) {
-            } catch (IllegalArgumentException ex) {
-            } catch (InvocationTargetException ex) {
-            } catch (NoSuchMethodException ex) {
-            } catch (SecurityException ex) {
+            } catch (IllegalAccessException ignored) {
+            } catch (IllegalArgumentException ignored) {
+            } catch (InvocationTargetException ignored) {
+            } catch (NoSuchMethodException ignored) {
+            } catch (SecurityException ignored) {
             }
         }
         return temp.toArray();

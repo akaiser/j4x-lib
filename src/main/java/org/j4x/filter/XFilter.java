@@ -1,6 +1,7 @@
 package org.j4x.filter;
 
 import com.google.gson.annotations.SerializedName;
+import com.sun.istack.internal.Nullable;
 import org.j4x.constants.XTableContstants.TableFilterType;
 
 /**
@@ -47,7 +48,7 @@ public class XFilter {
         return filterValue;
     }
 
-    public void setFilterValue(String value) {
+    public void setFilterValue(@Nullable String value) {
         this.filterValue = value;
     }
 

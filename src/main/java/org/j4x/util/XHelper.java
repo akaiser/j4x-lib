@@ -11,7 +11,8 @@ public class XHelper {
     /**
      * Wandelt das Attribut in eine Getter-Paths um
      *
-     * @return Getter-Paths
+     * @param path to object
+     * @return getter-paths
      */
     public static String[] getMethodPath(String path) {
 

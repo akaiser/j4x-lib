@@ -1,8 +1,8 @@
 .ui-xoverlay {
     background: url("images/anim_load.gif") no-repeat 50% 50% #AAAAAA;
-    cursor:wait;
+    cursor: wait;
     -moz-opacity: 0.4;
     opacity: 0.4;
-    filter: alpha(opacity=40);
+    filter: alpha(opacity = 40);
     position: absolute;
 }

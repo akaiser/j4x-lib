@@ -39,14 +39,14 @@
         _xoverlay: null,
         _selectedRow: null,
         _cellAlignArray: [],
-        
+
         _create: function() {
             this._createTable();
             this._createFilter();
         },
 
         _init: function() {
-            
+
             // init overlay functionality
             this._xoverlay = $.xoverlay(this.element);
 
@@ -100,7 +100,7 @@
 
                 headerRow.append(column.append(button));
             });
-            
+
             /**
              * footer creation
              */
@@ -110,7 +110,7 @@
             this._pe = [
             $('<span title="INFO" class="ui-xdatatable_footer_span">'
                 + ((paging && o.paging.lbl_entry)?o.paging.lbl_entry:'entry') + ': <span /> | '
-                + ((paging && o.paging.lbl_page)?o.paging.lbl_page:'page') + ': <span />' 
+                + ((paging && o.paging.lbl_page)?o.paging.lbl_page:'page') + ': <span />'
                 + '</span>'),
             $('<button title="FIRST" />').button({
                 label: (paging && o.paging.lbl_first)?o.paging.lbl_first:'first',
@@ -265,7 +265,7 @@
                                 //e.filtervalue = $.trim($(this).attr('value'));
                                 self._call('FILTER', e);
                             });
-                           
+
                         //interesting for multiselect
                         //var str = '';
                         //$('#'+this[0]+' option:selected').each(function () {
@@ -306,21 +306,21 @@
 
             // show overlay
             self._xoverlay.show(true);
-            
+
             var toJSON = $.toJSON(requestParams);
-            
+
             switch(typeof self.options.datasource){
-                
+
                 // javascript object request
                 case 'object':{
                     self.options.datasource.getContent(requestType,toJSON,
                         function(responce){
                             self._restore(requestType, requestParams.event, $.parseJSON(responce));
                         });
-                        
+
                     break;
                 }
-                
+
                 // servlet or remote page request
                 case 'string':{
                     $.ajax({
@@ -331,12 +331,12 @@
                             self._restore(requestType, requestParams.event, responce);
                         }
                     });
-                    
+
                     break;
                 }
             }
         },
-        
+
         _restore: function(requestType, eventType, responce) {
             this._restoreBody(responce[0]);
             this._restoreHeader(responce[1], responce[0].length);
@@ -461,13 +461,13 @@
             //self._removeHoverAndFocus(currentButton);
             });
         },
-        
+
         // @todo describe params
         _restoreFooter: function(params) {
             var self = this;
 
             $(params).each(function(i,e){
-                
+
                 // get the info
                 if(i===0){
                     var spans = $('span',self._pe[i]), values = e.split('|');
@@ -513,7 +513,7 @@
 
                                 // there is a label attr and filter is present
                                 if(f.label && f.id === e[0]){
-                                    
+
                                     var filterValue = $.trim($(filterElement).val());
 
                                     // set the default label
@@ -575,7 +575,7 @@
             });
         },
 
-        
+
         // helper for removing hover and focus
         _removeHoverAndFocus: function(obj) {
             if($(obj).hasClass('ui-state-hover')){
