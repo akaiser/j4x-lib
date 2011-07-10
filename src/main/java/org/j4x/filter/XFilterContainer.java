@@ -41,7 +41,7 @@ public class XFilterContainer {
     /**
      * Filterung der Liste anhand von gegebenen Filterelementen
      *
-     * @param mainList  with all objects
+     * @param mainList with all objects
      * @return filtered object list
      */
     public List filter(List mainList) {
@@ -193,8 +193,8 @@ public class XFilterContainer {
     /**
      * Suchen, Filtern und Sortiren von Elementen aller Objekte einer Spalte
      *
-     * @param filter    the filter
-     * @param subList   list with elements (subList)
+     * @param filter  the filter
+     * @param subList list with elements (subList)
      * @return gefiltertes Array
      */
     private Object[] getOptions(XFilter filter, List subList) {
