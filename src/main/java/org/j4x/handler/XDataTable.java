@@ -1,7 +1,6 @@
 package org.j4x.handler;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import org.j4x.constants.XTableContstants.TableRequestType;
 import org.j4x.extension.XTablePaging;
 import org.j4x.extension.XTableSort;
@@ -14,7 +13,6 @@ import org.j4x.request.XRequestSort;
 import org.j4x.util.XHelper;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**
