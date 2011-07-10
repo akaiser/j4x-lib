@@ -19,10 +19,10 @@
  * @param {element} to overlay
  */
 (function($) {
-    $.xoverlay = function(obj){
+    $.xoverlay = function(obj) {
 
         // the overlay div
-        var xoverlay = $('<div id="'+$(obj).attr('id')+'_xoverlay" class="ui-xoverlay" />');
+        var xoverlay = $('<div id="' + $(obj).attr('id') + '_xoverlay" class="ui-xoverlay" />');
 
         var offset = null;
 
@@ -30,21 +30,21 @@
         $(obj).after(xoverlay);
 
         // public method for de/activate the overlay
-        this.show = function(visible){
+        this.show = function(visible) {
 
             offset = obj.offset();
 
             // set position of the overlay
             $(xoverlay).css({
-                'width':$(obj).width(),
-                'height':$(obj).height(),
-                'top':offset.top,
-                'left':offset.left
-            });
+                        'width':$(obj).width(),
+                        'height':$(obj).height(),
+                        'top':offset.top,
+                        'left':offset.left
+                    });
 
             // de-/activate
             visible ? $(xoverlay).show() : $(xoverlay).hide();
-        }
+        };
         return this;
     };
 })(jQuery);

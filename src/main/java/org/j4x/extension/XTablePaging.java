@@ -5,13 +5,7 @@ import java.util.List;
 
 public class XTablePaging {
 
-    /**
-     * Die Anzahl sichtbarer Eintraege/Seite
-     */
     private Integer rowCount = null;
-    /**
-     * Die aktuell dargestellte Seite
-     */
     private Integer pageNumber = 1;
 
     public void turnPage(boolean up) {
@@ -36,6 +30,7 @@ public class XTablePaging {
      * Liefert ein Array fuer den vereinfachten Transport von
      * Paginatorattributen an die Oberflaeche.
      *
+     * @param subList of objects
      * @return paginatorValues
      */
     public List getValues(List subList) {
@@ -64,28 +59,21 @@ public class XTablePaging {
                     : 0;
 
             // de-/activate the buttons
-            boolean previous = pagesFrom <= 1 ? false : true,
-                    next = pagesSum <= pagesFrom ? false : true;
+            boolean previous = pagesFrom > 1,
+                    next = pagesSum > pagesFrom;
 
             return Arrays.asList(
-                    itemsFrom + " - " + itemsTo + " / " + subListSize
-                    + "|"
-                    + pagesFrom + " / " + pagesSum,
+                    itemsFrom
+                            + " - " + itemsTo + " / " + subListSize
+                            + "|" + pagesFrom + " / " + pagesSum,
                     previous, previous, next, next);
 
         } else {
             return Arrays.asList(
-                    (!subList.isEmpty() ? 1 : 0) + " - " + subListSize
-                    + "|"
-                    + 1 + " / " + 1);
+                    (!subList.isEmpty() ? 1 : 0)
+                            + " - " + subListSize
+                            + "|" + 1 + " / " + 1);
         }
-    }
-
-    /*
-     * Getters/Setters
-     */
-    public Integer getPageNumber() {
-        return pageNumber;
     }
 
     public void setPageNumber(Integer pageNumber) {
