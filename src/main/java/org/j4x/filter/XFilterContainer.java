@@ -16,7 +16,7 @@ import java.util.*;
 public class XFilterContainer {
 
     // Liste mit allen Filtern
-    private List<XFilter> filterList = new ArrayList<XFilter>();
+    private Collection<XFilter> filterList = new ArrayList<XFilter>();
 
     // Hinzufuegen einer XFilter-Instanz
     public void add(XFilter[] filter) {
@@ -70,7 +70,7 @@ public class XFilterContainer {
                         // Durchlauf aller verschachtelten Methoden
                         for (String method : XHelper.getMethodPath(filter.getFilterPath())) {
                             om = oc.getClass().getMethod(method, new Class[]{});
-                            oc = om.invoke(oc, new Object[]{});
+                            oc = om.invoke(oc);
                         }
 
                         // set the value
