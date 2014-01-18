@@ -5,7 +5,7 @@
     <artifactId>j4x-lib</artifactId>
     <name>j4x Library</name>
     <packaging>jar</packaging>
-    <version>0.8</version>
+    <version>0.9</version>
 
     <dependencies>
         <dependency>
